@@ -5,22 +5,20 @@
 #pyside6-uic filename.ui > filename.py
 
 import sys
+from PySide6 import QtWidgets
 from demo import Ui_MainWindow
-from PySide6 import *
-from PySide6.QtWidgets import QApplication, QMainWindow
 
-class MainWindow(QMainWindow):
-    def __int__(self):
+
+class MainWindow(QtWidgets.QMainWindow, Ui_MainWindow):
+    def __init__(self):
         super(MainWindow, self).__init__()
-        self.ui = Ui_MainWindow()
-        self.ui.setupUi(self)
+        self.setupUi(self)
+
+    #here create your functions
 
 
 
-if __name__ == "__main__":
-    app = QApplication(sys.argv)
-
-    window = MainWindow()
-    window.show()
-
-    sys.exit(app.exec())
+app = QtWidgets.QApplication(sys.argv)
+window = MainWindow()
+window.show()
+app.exec()
