@@ -8,8 +8,10 @@ import sys
 from PySide6 import QtWidgets, QtGui, QtCore
 from PySide6.QtGui import QPixmap
 from PySide6.QtWidgets import *
-
 from demo import Ui_MainWindow
+
+import cv2 as cv
+import numpy as np
 
 
 class MainWindow(QtWidgets.QMainWindow, Ui_MainWindow):
@@ -24,6 +26,7 @@ class MainWindow(QtWidgets.QMainWindow, Ui_MainWindow):
         fileName, _ = QFileDialog.getOpenFileName(self, "Open File", QtCore.QDir.currentPath())
         if fileName:
             image = QtGui.QImage(fileName)
+
             if image.isNull():
                 QMessageBox.information(self, "Image Viewer",
                                               "Cannot load %s." % fileName)
@@ -32,7 +35,6 @@ class MainWindow(QtWidgets.QMainWindow, Ui_MainWindow):
             self.displayImage.setPixmap(QtGui.QPixmap.fromImage(image))
             self.displayImage.resize(image.width(), image.height())
             self.scaleFactor = 50
-
 
 app = QtWidgets.QApplication(sys.argv)
 window = MainWindow()
