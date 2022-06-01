@@ -7,18 +7,24 @@ from PIL import Image, ImageTk
 import cv2 as cv
 import numpy as np
 
+import codecs
+
 global image
 mask = np.ones((490, 500))
 
 app = Tk()
 app.geometry('500x700')
+app.state('zoomed')
 def openInsertion():
     path = filedialog.askopenfile()
     if path:
-        image = Image.open(path)
-        image = image.resize(image.width(), image.height())
-        image = ImageTk.PhotoImage(image)
-        image_area.create_image(0, 0, image=image, anchor='c')
+        print(path)
+        image = Image.open(path.name)
+        print(image.width)
+        test = ImageTk.PhotoImage(image)
+        label1 = tkinter.Label(image=test)
+        label1.image = test
+        label1.place(relx=0.5, rely=0.5)
 
 
 def get_x_and_y(event):
