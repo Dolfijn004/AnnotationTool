@@ -65,7 +65,7 @@ def return_shape(image_in):
     cv2.floodFill(im_floodill, mask, (0, 0), (255, 255, 255))
     cv2.imshow("Floodfilled Image", im_floodill)
     im_floodill = np.abs(im_floodill - np.ones((490, 500)) * 255)
-
+    #returned niks dus is useless atm
 
 def show_mask():
     global image_for_mask_multiplication
