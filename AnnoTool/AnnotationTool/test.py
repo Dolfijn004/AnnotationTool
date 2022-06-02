@@ -10,7 +10,7 @@ from PIL.features import codecs
 
 root = Tk()
 root.geometry('1500x1000')
-root.state("normal")
+root.state("zoomed")
 root.title("Image Annotation Tool")
 global image
 mask = np.ones((490, 500))
@@ -35,9 +35,35 @@ def openImage():
         # this variable is used for the whole program
         global image
         image = Image.open(path)
-        image = image.resize((image_area.winfo_width(), image_area.winfo_height()), Image.ANTIALIAS)
+        resized_width, resized_height = resize_image(image.width, image.height)
+        image = image.resize((resized_width, resized_height), Image.ANTIALIAS)
         image = ImageTk.PhotoImage(image)
-        image_area.create_image(0, 0, image=image, anchor=NW)
+        if (resized_width < image_area.winfo_width() - 4):
+            centering_width = (image_area.winfo_width() - resized_width) / 2
+            image_area.create_image(centering_width, 0, image=image, anchor=NW)
+        elif (resized_height < image_area.winfo_height() - 4):
+            centering_height = (image_area.winfo_height() - resized_height) / 2
+            image_area.create_image(0, centering_height, image=image, anchor=NW)
+        else:
+            image_area.create_image(0, 0, image=image, anchor=NW)
+
+# resizes image relative to the canvas*
+def resize_image(width, height):
+    canvas_width = image_area.winfo_width() - 4
+    canvas_height = image_area.winfo_height() - 4  # canvas width and height variables minus the border
+    if width/height > canvas_width/canvas_height:  # checking if dimensions are bigger then the canvas' dimensions
+        height = round(height * canvas_width / width)
+        width = canvas_width
+        return width, height
+    elif width/height < canvas_width/canvas_height:  # checking if dimensions are smaller then the canvas' dimensions
+        width = round(width * canvas_height / height)
+        height = canvas_height
+        return width, height
+    else:  # dimensions are equal
+        width = canvas_width
+        height = canvas_height
+        return width, height
+
 
 
 # Frame for buttons
@@ -80,9 +106,10 @@ nextImage.grid(row=8, column=0)
 preImage = Button(buttonFrame, text="Pre Image", style="W.TButton")
 preImage.grid(row=9, column=0)
 
-# canvas
+# canvas  don't change the border, will mess with resize_image()
 image_area = Canvas(canvasFrame, width=1100, height=950, bg='grey')
 image_area.grid(row=0, column=1)
+
 
 # listbox
 list = Listbox(propertiesFrame, width=40, height=1000)
