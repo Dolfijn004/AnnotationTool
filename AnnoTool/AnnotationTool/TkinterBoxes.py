@@ -7,6 +7,7 @@ import cv2
 from PIL import Image, ImageTk
 import cv2 as cv
 import numpy as np
+import keyboard
 
 
 global image
@@ -67,8 +68,10 @@ def return_shape(image_in):
     cv2.floodFill(im_floodill, mask, (0, 0), (255, 255, 255))
     cv2.imshow("Floodfilled Image", im_floodill)
     im_floodill = np.abs(im_floodill - np.ones((490, 500)) * 255)
+    return im_floodill
     # returned niks dus is useless atm, hierdoor werkt show_mask() ook niet
     # the_real_mask verwacht namelijk een int uit deze functie
+
 
 def show_mask():
     global image_for_mask_multiplication

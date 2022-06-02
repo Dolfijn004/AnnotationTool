@@ -10,6 +10,7 @@ from PIL.features import codecs
 
 root = Tk()
 root.geometry('1500x1000')
+root.state("normal")
 root.title("Image Annotation Tool")
 global image
 mask = np.ones((490, 500))
@@ -34,10 +35,9 @@ def openImage():
         # this variable is used for the whole program
         global image
         image = Image.open(path)
-        image = image.resize((image_area.winfo_width(),image_area.winfo_height()), Image.ANTIALIAS)
+        image = image.resize((image_area.winfo_width(), image_area.winfo_height()), Image.ANTIALIAS)
         image = ImageTk.PhotoImage(image)
         image_area.create_image(0, 0, image=image, anchor=NW)
-
 
 
 # Frame for buttons
@@ -48,16 +48,15 @@ buttonFrame.grid(row=0, column=0, sticky='nsew')
 canvasFrame = Frame(root, height=root.winfo_height(), width=root.winfo_width())
 canvasFrame.grid(row=0,  column=1, sticky='ew')
 
-#left frame
+# left frame
 propertiesFrame = Frame(root, height=1000, width=20)
 propertiesFrame.grid(row=0, column=2, sticky='ne')
 
-#grid configuration
+# grid configuration
 root.rowconfigure(0, weight=3)
 root.columnconfigure(0, weight=1)
 root.columnconfigure(1, weight=3)
 root.columnconfigure(2, weight=1)
-
 
 # buttons
 openButton = Button(buttonFrame, text="Open", style="W.TButton", command=openImage)
@@ -80,12 +79,12 @@ nextImage = Button(buttonFrame, text="Nxt Image", style="W.TButton")
 nextImage.grid(row=8, column=0)
 preImage = Button(buttonFrame, text="Pre Image", style="W.TButton")
 preImage.grid(row=9, column=0)
-#canvas
+
+# canvas
 image_area = Canvas(canvasFrame, width=1100, height=950, bg='grey')
 image_area.grid(row=0, column=1)
 
-
-#listbox
+# listbox
 list = Listbox(propertiesFrame, width=40, height=1000)
 list.grid(row=0, column=2)
 
