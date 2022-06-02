@@ -1,4 +1,5 @@
 import tkinter
+import turtle
 from tkinter import *
 from tkinter import filedialog
 
@@ -7,7 +8,6 @@ from PIL import Image, ImageTk
 import cv2 as cv
 import numpy as np
 
-import codecs
 
 global image
 mask = np.ones((490, 500))
@@ -15,16 +15,18 @@ mask = np.ones((490, 500))
 app = Tk()
 app.geometry('500x700')
 app.state('zoomed')
+
+
 def openInsertion():
     path = filedialog.askopenfile()
     if path:
-        print(path)
         image = Image.open(path.name)
-        print(image.width)
+        # image = image.resize(image_area.canvasx(screenx=), image_area.canvasy())
         test = ImageTk.PhotoImage(image)
         label1 = tkinter.Label(image=test)
         label1.image = test
-        label1.place(relx=0.5, rely=0.5)
+        label1.place(relx=0.25, rely=0.0)
+        # moet nog croppen
 
 
 def get_x_and_y(event):
@@ -37,7 +39,7 @@ def draw_smth(event):
     image_area.create_line((lasx, lasy, event.x, event.y), fill='purple', width=2)
     lasx, lasy = event.x, event.y
 
-    if lasx < 500 and lasx >= 0 and lasy < 400 and lasy >= 0:
+    if 500 > lasx >= 0 and 400 > lasy >= 0:
         mask[lasy][lasx] = 0
         mask[lasy + 1][lasx + 1] = 0
         mask[lasy - 1][lasx - 1] = 0
@@ -65,7 +67,8 @@ def return_shape(image_in):
     cv2.floodFill(im_floodill, mask, (0, 0), (255, 255, 255))
     cv2.imshow("Floodfilled Image", im_floodill)
     im_floodill = np.abs(im_floodill - np.ones((490, 500)) * 255)
-    #returned niks dus is useless atm
+    # returned niks dus is useless atm, hierdoor werkt show_mask() ook niet
+    # the_real_mask verwacht namelijk een int uit deze functie
 
 def show_mask():
     global image_for_mask_multiplication
