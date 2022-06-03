@@ -23,7 +23,7 @@ ImageFound = False
 
 window = tk.Tk()
 window.title("Image Annotation Tool")
-window.geometry('%sx%s' % (WIDTH, HEIGHT))
+window.geometry('%sx%s' % (WIDTH, HEIGHT))  # canvas is groter dan window op deze manier...maakt alles wonky als je t niet op zoomed zet 
 window.state("zoomed")
 window.configure(background='grey')
 
@@ -68,6 +68,8 @@ def GetImageFilePath():
             image_area.create_image(0, 0, image=img, anchor=NW)
         # canvas.pack(side=tk.LEFT, expand=0, fill=tk.BOTH)
 
+
+        #  hoort dit niet ergens anders? je kan nu rects tekennen zonder de knop te usen
         rect_id = image_area.create_rectangle(topx, topy, topx, topy, dash=(2, 2), fill='', outline='red')
         image_area.bind('<Button-1>', get_mouse_posn)
         image_area.bind('<B1-Motion>', update_sel_rect)
@@ -97,12 +99,12 @@ def resize_image(width, height):
 
 def get_mouse_posn(event):
     global topy, topx
-    topx, topy = image_area.canvasx(event.x), image_area.canvasy(event.y) # convert to real canvas coordinates
+    topx, topy = image_area.canvasx(event.x), image_area.canvasy(event.y)  # convert to real canvas coordinates
 
 
 def update_sel_rect(event):
     global botx, boty
-    botx, boty = image_area.canvasx(event.x), image_area.canvasy(event.y) # convert to real canvas coordinates
+    botx, boty = image_area.canvasx(event.x), image_area.canvasy(event.y)  # convert to real canvas coordinates
     image_area.coords(rect_id, topx, topy, botx, boty)  # Update selection rect.
 
 
