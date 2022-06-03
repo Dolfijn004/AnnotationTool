@@ -24,8 +24,8 @@ ImageFound = False
 window = tk.Tk()
 window.title("Image Annotation Tool")
 window.geometry('%sx%s' % (WIDTH, HEIGHT))
+window.state("zoomed")
 window.configure(background='grey')
-
 
 
 # creating style object to style the buttons
@@ -40,7 +40,7 @@ style.configure('W.TButton', font=
                 padding=[30, 10, 30, 10])
 
 
-#functions
+# functions
 
 
 def GetImageFilePath():
@@ -54,9 +54,18 @@ def GetImageFilePath():
     ImgOpen = Image.open(ImageFilePath)
     if len(ImageFilePath) > 0:
         test = True
-        img = ImageTk.PhotoImage(Image.open(ImageFilePath))
+        resized_width, resized_height = resize_image(ImgOpen.width, ImgOpen.height)
+        ImgOpen = ImgOpen.resize((resized_width, resized_height), Image.ANTIALIAS)
+        img = ImageTk.PhotoImage(ImgOpen)
         ImageFound = True
-        image_area.create_image(0, 0, image=img, anchor=tk.NW)
+        if (resized_width < image_area.winfo_width() - 4):
+            centering_width = (image_area.winfo_width() - resized_width) / 2
+            image_area.create_image(centering_width, 0, image=img, anchor=NW)
+        elif (resized_height < image_area.winfo_height() - 4):
+            centering_height = (image_area.winfo_height() - resized_height) / 2
+            image_area.create_image(0, centering_height, image=img, anchor=NW)
+        else:
+            image_area.create_image(0, 0, image=img, anchor=NW)
         # canvas.pack(side=tk.LEFT, expand=0, fill=tk.BOTH)
 
         rect_id = image_area.create_rectangle(topx, topy, topx, topy, dash=(2, 2), fill='', outline='red')
@@ -69,6 +78,22 @@ def GetImageFilePath():
         window.mainloop()
 
 
+def resize_image(width, height):
+    canvas_width = image_area.winfo_width() - 4
+    canvas_height = image_area.winfo_height() - 4  # canvas width and height variables minus the border
+    if width/height > canvas_width/canvas_height:  # checking if dimensions are bigger then the canvas' dimensions
+        height = round(height * canvas_width / width)
+        width = canvas_width
+        return width, height
+    elif width/height < canvas_width/canvas_height:  # checking if dimensions are smaller than the canvas' dimensions
+        width = round(width * canvas_height / height)
+        height = canvas_height
+        return width, height
+    else:  # dimensions are equal
+        width = canvas_width
+        height = canvas_height
+        return width, height
+
 
 def get_mouse_posn(event):
     global topy, topx
@@ -79,6 +104,7 @@ def update_sel_rect(event):
     global botx, boty
     botx, boty = image_area.canvasx(event.x), image_area.canvasy(event.y) # convert to real canvas coordinates
     image_area.coords(rect_id, topx, topy, botx, boty)  # Update selection rect.
+
 
 def draw_rect(self):
     draw_data = image_area.create_rectangle(topx, topy, botx, boty, outline="green", fill="")
@@ -116,11 +142,6 @@ def clearRectangles():
     window.mainloop()
 
 
-
-
-
-
-
 # Frame for buttons
 buttonFrame = Frame(window, height=window.winfo_height(), width=window.winfo_width(), borderwidth=20, relief= GROOVE)
 buttonFrame.grid(row=0, column=0, sticky='nsew')
@@ -129,11 +150,11 @@ buttonFrame.grid(row=0, column=0, sticky='nsew')
 canvasFrame = Frame(window, height=window.winfo_height(), width=window.winfo_width(), borderwidth=20,  relief= GROOVE)
 canvasFrame.grid(row=0,  column=1, sticky='se')
 
-#left frame
+# left frame
 propertiesFrame = Frame(window, height=window.winfo_height(), width=window.winfo_width(), borderwidth=20, relief= GROOVE)
 propertiesFrame.grid(row=0, column=2, sticky='ne')
 
-#grid configuration
+# grid configuration
 window.rowconfigure(0, weight=3)
 window.columnconfigure(0, weight=1)
 window.columnconfigure(1, weight=3)
@@ -161,12 +182,14 @@ nextImage = Button(buttonFrame, text="Nxt Image", style="W.TButton")
 nextImage.grid(row=8, column=0)
 preImage = Button(buttonFrame, text="Pre Image", style="W.TButton")
 preImage.grid(row=9, column=0)
-#canvas
+
+
+# canvas
 image_area = Canvas(canvasFrame, width=1450, height=950, bg='grey')
 image_area.grid(row=0, column=1, sticky='nsew')
 
 
-#listbox
+# listbox
 list = Listbox(propertiesFrame, width=40, height=1000)
 list.grid(row=0, column=2)
 
