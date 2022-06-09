@@ -75,9 +75,9 @@ def GetImageFilePath():
 
 
 def resize_image(width, height):
-    canvas_width = image_area.winfo_width() - 4
-    canvas_height = image_area.winfo_height() - 4  # canvas width and height variables minus the border
-    if width / height > canvas_width / canvas_height:  # checking if dimensions are bigger then the canvas' dimensions
+    canvas_width = image_area.winfo_width()
+    canvas_height = image_area.winfo_height()  # canvas width and height variables minus the border
+    if width/height > canvas_width/canvas_height:  # checking if dimensions are bigger then the canvas' dimensions
         height = round(height * canvas_width / width)
         width = canvas_width
         return width, height
@@ -159,24 +159,26 @@ def clearRectangles():
     image_area.pack()
     window.mainloop()
 
+# MainFrame voor rest de andere frames
+mainFrame = tk.Frame(window).grid(sticky='nsew')
 
 # Frame for buttons
-buttonFrame = Frame(window, height=window.winfo_height(), width=window.winfo_width(), borderwidth=20, relief=GROOVE)
+buttonFrame = tk.Frame(mainFrame, height=window.winfo_height(), width=window.winfo_width(), borderwidth=10, relief=FLAT)
 buttonFrame.grid(row=0, column=0, sticky='nsew')
 
 # frame for the canvas
-canvasFrame = Frame(window, height=window.winfo_height(), width=window.winfo_width(), borderwidth=20, relief=GROOVE)
-canvasFrame.grid(row=0, column=1, sticky='se')
+canvasFrame = tk.Frame(mainFrame, height=window.winfo_height(), width=window.winfo_width(), relief=FLAT)
+canvasFrame.grid(row=0,  column=1, sticky='nsew')
 
 # left frame
-propertiesFrame = Frame(window, height=window.winfo_height(), width=window.winfo_width(), borderwidth=20, relief=GROOVE)
-propertiesFrame.grid(row=0, column=2, sticky='ne')
+propertiesFrame = tk.Frame(mainFrame, height=window.winfo_height(), width=window.winfo_width(), borderwidth=10, relief=FLAT)
+propertiesFrame.grid(row=0, column=2, sticky='nsew')
 
 # grid configuration
-window.rowconfigure(0, weight=3)
-window.columnconfigure(0, weight=1)
-window.columnconfigure(1, weight=3)
-window.columnconfigure(2, weight=1)
+window.grid_columnconfigure(0, weight=1)
+window.grid_columnconfigure(1, weight=100000)
+window.grid_columnconfigure(2, weight=1)
+window.grid_rowconfigure(0, weight=1)
 
 # buttons
 openButton = Button(buttonFrame, text="Open", style="W.TButton", command=GetImageFilePath)
@@ -203,8 +205,9 @@ createPolygonBtn = Button(buttonFrame, text="Create poly", style="W.TButton", co
 createPolygonBtn.grid(row=10, column=0)
 
 # canvas
-image_area = Canvas(canvasFrame, width=1450, height=950)
+image_area = Canvas(canvasFrame, bg='grey')
 image_area.grid(row=0, column=1, sticky='nsew')
+image_area.pack(fill='both', expand=True)
 
 
 # listbox for labels
