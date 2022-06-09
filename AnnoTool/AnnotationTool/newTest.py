@@ -1,4 +1,5 @@
 import os
+import tkinter
 from tkinter import *
 from tkinter.ttk import *
 import cv2
@@ -68,14 +69,6 @@ def GetImageFilePath():
             image_area.create_image(0, 0, image=img, anchor=NW)
         # canvas.pack(side=tk.LEFT, expand=0, fill=tk.BOTH)
 
-
-        #  hoort dit niet ergens anders? je kan nu rects tekennen zonder de knop te usen
-        rect_id = image_area.create_rectangle(topx, topy, topx, topy, dash=(2, 2), fill='', outline='red')
-        image_area.bind('<Button-1>', get_mouse_posn)
-        image_area.bind('<B1-Motion>', update_sel_rect)
-        image_area.bind('<ButtonRelease-1>', draw_rect)
-        image_area.update()
-
     if (test):
         window.mainloop()
 
@@ -115,6 +108,13 @@ def draw_rect(self):
 
 
 def cropImages():
+    rect_id = image_area.create_rectangle(topx, topy, topx, topy, dash=(2, 2), fill='', outline='red')
+    image_area.bind('<Button-1>', get_mouse_posn)
+    image_area.bind('<B1-Motion>', update_sel_rect)
+    image_area.bind('<ButtonRelease-1>', draw_rect)
+    image_area.update()
+
+def saveAnnotations():
     im = Image.open(ImageFilePath)
     mainDir = os.path.dirname(ImageFilePath)
     global prodDir
@@ -168,11 +168,11 @@ openButton = Button(buttonFrame, text="Open", style="W.TButton", command=GetImag
 openButton.grid(row=0, column=0)
 openFolderButton = Button(buttonFrame, text="Open Folder", style="W.TButton")
 openFolderButton.grid(row=1, column=0)
-saveButton = Button(buttonFrame, text="Save", style="W.TButton",  command=cropImages)
+saveButton = Button(buttonFrame, text="Save", style="W.TButton",  command=saveAnnotations)
 saveButton.grid(row=2, column=0)
 saveAsButton = Button(buttonFrame, text="Save As", style="W.TButton")
 saveAsButton.grid(row=3, column=0)
-drawAnnotationBtn = Button(buttonFrame, text="Draw Rect", style="W.TButton")
+drawAnnotationBtn = Button(buttonFrame, text="Draw Rect", style="W.TButton", command=cropImages)
 drawAnnotationBtn.grid(row=4, column=0)
 createRecButton = Button(buttonFrame, text="Clear Annotations", style="W.TButton", command=clearRectangles)
 createRecButton.grid(row=5, column=0)
@@ -187,13 +187,30 @@ preImage.grid(row=9, column=0)
 
 
 # canvas
-image_area = Canvas(canvasFrame, width=1450, height=950, bg='grey')
+image_area = Canvas(canvasFrame, width=1450, height=950)
 image_area.grid(row=0, column=1, sticky='nsew')
 
 
-# listbox
-list = Listbox(propertiesFrame, width=40, height=1000)
-list.grid(row=0, column=2)
+# listbox for labels
+list = Listbox(propertiesFrame, width=40, height=20)
+list.grid(row=2, column=2)
+#entry
+entryButton = Button(propertiesFrame, text="Add label", width=20)
+entryButton.grid(row=1, column=2)
+#label
+labelEntry = Entry(propertiesFrame, width=30)
+labelEntry.grid(row=0, column=2)
+#-------
+#label for folder list
+label2 = Label(propertiesFrame, text= "Images in the folder")
+label2.grid(row=3, column=2)
+#listbox for images in folder
+folderList = Listbox(propertiesFrame, width=40, height=40)
+folderList.grid(row=4, column=2)
+
+
+
+
 
 # menubar
 menubar = Menu(window)
