@@ -1,5 +1,6 @@
 import os
 import tkinter
+import tkinter.messagebox
 from tkinter import *
 from tkinter.ttk import *
 import cv2
@@ -68,16 +69,102 @@ def GetImageFilePath():
             image_area.create_image(0, centering_height, image=img, anchor=NW)
         else:
             image_area.create_image(0, 0, image=img, anchor=NW)
-        # canvas.pack(side=tk.LEFT, expand=0, fill=tk.BOTH)
 
     if (test):
         window.mainloop()
 
 
+def openFolder():
+    global image
+    global pic
+    global images
+    global picOpen
+    global ImageFound
+    directory = filedialog.askdirectory()
+    os.chdir(directory)  # it permits to change the current dir
+    allImages = os.listdir()
+    allImages.reverse()
+    for image in allImages:  # it returns the list of files song
+        pos = 0
+        if image.endswith(('png', 'jpg', 'jpeg', 'ico')):
+            folderList.insert(pos, image)
+            pos += 1
+    folderList.selection_set(0)
+    folderList.see(0)
+    folderList.activate(0)
+    folderList.selection_anchor(0)
+    image = folderList.curselection()
+    images = folderList.get(image[0])
+    img1 = Image.open(images)
+    pic = ImageTk.PhotoImage(img1, )
+    ImageFound = True
+    if len(images) > 0:
+        test = True
+        resized_width, resized_height = resize_image(img1.width, img1.height)
+        picOpen = img1.resize((resized_width, resized_height), Image.ANTIALIAS)
+        imgg = ImageTk.PhotoImage(picOpen)
+        if resized_width < image_area.winfo_width() - 4:  # check if image is less wide than the canvas
+            centering_width = (image_area.winfo_width() - resized_width) / 2
+            image_area.create_image(centering_width, 0, image=imgg, anchor=NW)
+        elif resized_height < image_area.winfo_height() - 4:  # check if image is taller than the canvas
+            centering_height = (image_area.winfo_height() - resized_height) / 2
+            image_area.create_image(0, centering_height, image=imgg, anchor=NW)
+        else:
+            image_area.create_image(0, 0, image=imgg, anchor=NW)
+
+    if (test):
+        window.mainloop()
+
+
+def nextImage():
+    try:
+        next_one = folderList.curselection()
+        next_one = next_one[0] + 1
+        image = folderList.get(next_one)
+        img1 = Image.open(image)
+        resized_width, resized_height = resize_image(img1.width, img1.height)
+        img1 = img1.resize(resized_width, resized_height, Image.ANTIALIAS)
+        imagg = ImageTk.PhotoImage(img1)
+        if resized_width < image_area.winfo_width() - 4:  # check if image is less wide than the canvas
+            centering_width = (image_area.winfo_width() - resized_width) / 2
+            image_area.create_image(centering_width, 0, image=imagg, anchor=NW)
+        elif resized_height < image_area.winfo_height() - 4:  # check if image is taller than the canvas
+            centering_height = (image_area.winfo_height() - resized_height) / 2
+            image_area.create_image(0, centering_height, image=imagg, anchor=NW)
+        else:
+            image_area.create_image(0, 0, image=imagg, anchor=NW)
+    except:
+        tkinter.messagebox.showwarning("Warning", "Please press the Previous button")
+
+def prevImage():
+    try:
+        next_one = folderList.curselection()
+        next_one = next_one[0] - 1
+        image = folderList.get(next_one)
+        img1 = Image.open(image)
+        resized_width, resized_height = resize_image(img1.width, img1.height)
+        img1 = img1.resize(resized_width, resized_height, Image.ANTIALIAS)
+        # imagg = ImageTk.PhotoImage(img1)
+        if resized_width < image_area.winfo_width() - 4:  # check if image is less wide than the canvas
+            centering_width = (image_area.winfo_width() - resized_width) / 2
+            image_area.create_image(centering_width, 0, image=img1, anchor=NW)
+        elif resized_height < image_area.winfo_height() - 4:  # check if image is taller than the canvas
+            centering_height = (image_area.winfo_height() - resized_height) / 2
+            image_area.create_image(0, centering_height, image=img1, anchor=NW)
+        else:
+            image_area.create_image(0, 0, image=img1, anchor=NW)
+    except:
+        tkinter.messagebox.showwarning("Warning", "Please press the Next button")
+
+
+#connecting arrows to functions
+# window.bind('<Right>', lambda x: nextImage())
+# window.bind('<Left>', lambda x: preImage())
+
 def resize_image(width, height):
     canvas_width = image_area.winfo_width()
     canvas_height = image_area.winfo_height()  # canvas width and height variables minus the border
-    if width/height > canvas_width/canvas_height:  # checking if dimensions are bigger then the canvas' dimensions
+    if width / height > canvas_width / canvas_height:  # checking if dimensions are bigger then the canvas' dimensions
         height = round(height * canvas_width / width)
         width = canvas_width
         return width, height
@@ -130,6 +217,7 @@ def cropImages():
     image_area.bind('<ButtonRelease-1>', draw_rect)
     image_area.update()
 
+
 def saveAnnotations():
     im = Image.open(ImageFilePath)
     mainDir = os.path.dirname(ImageFilePath)
@@ -159,6 +247,7 @@ def clearRectangles():
     image_area.pack()
     window.mainloop()
 
+
 # MainFrame voor rest de andere frames
 mainFrame = tk.Frame(window).grid(sticky='nsew')
 
@@ -168,10 +257,11 @@ buttonFrame.grid(row=0, column=0, sticky='nsew')
 
 # frame for the canvas
 canvasFrame = tk.Frame(mainFrame, height=window.winfo_height(), width=window.winfo_width(), relief=FLAT)
-canvasFrame.grid(row=0,  column=1, sticky='nsew')
+canvasFrame.grid(row=0, column=1, sticky='nsew')
 
 # left frame
-propertiesFrame = tk.Frame(mainFrame, height=window.winfo_height(), width=window.winfo_width(), borderwidth=10, relief=FLAT)
+propertiesFrame = tk.Frame(mainFrame, height=window.winfo_height(), width=window.winfo_width(), borderwidth=10,
+                           relief=FLAT)
 propertiesFrame.grid(row=0, column=2, sticky='nsew')
 
 # grid configuration
@@ -183,23 +273,23 @@ window.grid_rowconfigure(0, weight=1)
 # buttons
 openButton = Button(buttonFrame, text="Open", style="W.TButton", command=GetImageFilePath)
 openButton.grid(row=0, column=0)
-openFolderButton = Button(buttonFrame, text="Open Folder", style="W.TButton")
+openFolderButton = Button(buttonFrame, text="Open Folder", style="W.TButton", command=openFolder)
 openFolderButton.grid(row=1, column=0)
-saveButton = Button(buttonFrame, text="Save", style="W.TButton",  command=saveAnnotations)
+saveButton = Button(buttonFrame, text="Save", style="W.TButton", command=saveAnnotations)
 saveButton.grid(row=2, column=0)
 saveAsButton = Button(buttonFrame, text="Save As", style="W.TButton")
 saveAsButton.grid(row=3, column=0)
 drawAnnotationBtn = Button(buttonFrame, text="Draw Rect", style="W.TButton", command=cropImages)
 drawAnnotationBtn.grid(row=4, column=0)
-createRecButton = Button(buttonFrame, text="Clear Annotations", style="W.TButton", command=clearRectangles)
-createRecButton.grid(row=5, column=0)  # create button is clear button?
+clearRecButton = Button(buttonFrame, text="Clear Annotations", style="W.TButton", command=clearRectangles)
+clearRecButton.grid(row=5, column=0)
 zoomInButton = Button(buttonFrame, text="Zoom In", style="W.TButton")
 zoomInButton.grid(row=6, column=0)
 zoomOutButton = Button(buttonFrame, text="Zoom Out", style="W.TButton")
 zoomOutButton.grid(row=7, column=0)
-nextImage = Button(buttonFrame, text="Next Image", style="W.TButton")
+nextImage = Button(buttonFrame, text="Next Image", style="W.TButton", command=nextImage)
 nextImage.grid(row=8, column=0)
-preImage = Button(buttonFrame, text="Prev Image", style="W.TButton")
+preImage = Button(buttonFrame, text="Prev Image", style="W.TButton", command=prevImage)
 preImage.grid(row=9, column=0)
 createPolygonBtn = Button(buttonFrame, text="Create poly", style="W.TButton", command=create_polygon)
 createPolygonBtn.grid(row=10, column=0)
@@ -209,27 +299,22 @@ image_area = Canvas(canvasFrame, bg='grey')
 image_area.grid(row=0, column=1, sticky='nsew')
 image_area.pack(fill='both', expand=True)
 
-
 # listbox for labels
 list = Listbox(propertiesFrame, width=40, height=20)
 list.grid(row=2, column=2)
-#entry
+# entry
 entryButton = Button(propertiesFrame, text="Add label", width=20)
 entryButton.grid(row=1, column=2)
-#label
+# label
 labelEntry = Entry(propertiesFrame, width=30)
 labelEntry.grid(row=0, column=2)
-#-------
-#label for folder list
-label2 = Label(propertiesFrame, text= "Images in the folder")
+# -------
+# label for folder list
+label2 = Label(propertiesFrame, text="Images in the folder")
 label2.grid(row=3, column=2)
-#listbox for images in folder
+# listbox for images in folder
 folderList = Listbox(propertiesFrame, width=40, height=40)
 folderList.grid(row=4, column=2)
-
-
-
-
 
 # scrollbar
 # scrollbarH = Scrollbar(canvasFrame, orient="horizontal", command=image_area.xview)
