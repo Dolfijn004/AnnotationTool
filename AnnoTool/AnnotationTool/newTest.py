@@ -12,6 +12,8 @@ import os
 import tkinter as tk
 import tkinter.filedialog as filedialog
 from PIL import Image, ImageTk, ImageGrab
+from pynput import keyboard
+from pynput.keyboard import Listener
 
 WIDTH, HEIGHT = 1200, 800
 topx, topy, botx, boty = 0, 0, 0, 0
@@ -136,6 +138,7 @@ def nextImage():
     except:
         tkinter.messagebox.showwarning("Warning", "Please press the Previous button")
 
+
 def prevImage():
     try:
         next_one = folderList.curselection()
@@ -157,7 +160,7 @@ def prevImage():
         tkinter.messagebox.showwarning("Warning", "Please press the Next button")
 
 
-#connecting arrows to functions
+# connecting arrows to functions
 # window.bind('<Right>', lambda x: nextImage())
 # window.bind('<Left>', lambda x: preImage())
 
@@ -247,6 +250,61 @@ def clearRectangles():
     image_area.pack()
     window.mainloop()
 
+
+def on_press_save():
+    saveAnnotations()
+
+
+window.bind("<Control-s>", lambda x: on_press_save())
+
+
+def on_press_open():
+    GetImageFilePath()
+
+
+window.bind("<Control-o>", lambda x: on_press_open())
+
+
+def on_press_Clear():
+    clearRectangles()
+
+
+window.bind("<Control-z>", lambda x: on_press_Clear())
+
+
+def on_press_folder():
+    openFolder()
+
+
+window.bind("<Control-f>", lambda x: on_press_folder())
+
+
+def left():
+    prevImage()
+
+
+window.bind("<Left>", lambda x: left())
+
+
+def right():
+    nextImage()
+
+
+window.bind("<Right>", lambda x: right())
+
+
+def on_zoomin_press():
+    pass
+
+
+window.bind("<Up>", lambda x: on_zoomin_press())
+
+
+def on_zoomout_press():
+    pass
+
+
+window.bind("<Down>", lambda x: on_zoomout_press())
 
 # MainFrame voor rest de andere frames
 mainFrame = tk.Frame(window).grid(sticky='nsew')

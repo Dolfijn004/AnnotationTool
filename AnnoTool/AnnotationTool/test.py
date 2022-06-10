@@ -7,6 +7,7 @@ from PIL import Image, ImageTk
 import cv2 as cv
 import numpy as np
 from PIL.features import codecs
+from pynput import keyboard
 
 root = Tk()
 root.geometry('1500x1000')
@@ -63,8 +64,6 @@ def resize_image(width, height):
         width = canvas_width
         height = canvas_height
         return width, height
-
-
 
 # Frame for buttons
 buttonFrame = Frame(root, height=1000, width=15)

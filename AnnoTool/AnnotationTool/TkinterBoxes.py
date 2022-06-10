@@ -9,7 +9,6 @@ import cv2 as cv
 import numpy as np
 import keyboard
 
-
 global image
 mask = np.ones((490, 500))
 
@@ -51,7 +50,6 @@ def draw_smth(event):
 def select_area():
     image_area.bind("<Button-1>", get_x_and_y)
     image_area.bind("<B1-Motion>", draw_smth)
-
 
 def return_shape(image_in):
     image = image_in
@@ -106,6 +104,9 @@ open_image.pack()
 
 crop_area = tkinter.Button(app, width=20, text='Select Area', command=select_area)
 crop_area.pack()
+
+Draw_Rect = tkinter.Button(app, width=20, text='Draw rectangle', command=rectangle_area)
+Draw_Rect.pack()
 
 show_area = tkinter.Button(app, width=20, text='Show Area', command=show_mask)
 show_area.pack()
