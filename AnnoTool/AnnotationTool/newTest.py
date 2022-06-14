@@ -17,6 +17,7 @@ from pynput.keyboard import Listener
 
 WIDTH, HEIGHT = 1200, 800
 topx, topy, botx, boty = 0, 0, 0, 0
+currentx, currenty = 0, 0
 rect_id = None
 polygon_point_coord = list()
 rect_list = list()
@@ -29,7 +30,7 @@ ImageFound = False
 window = tk.Tk()
 window.title("Image Annotation Tool")
 window.geometry('%sx%s' % (
-    WIDTH, HEIGHT))  # canvas is groter dan window op deze manier...maakt alles wonky als je het niet op zoomed zet
+    WIDTH, HEIGHT))
 window.state("zoomed")
 window.configure(background='grey')
 
@@ -125,7 +126,7 @@ def nextImage():
         image = folderList.get(next_one)
         img1 = Image.open(image)
         resized_width, resized_height = resize_image(img1.width, img1.height)
-        img1 = img1.resize(resized_width, resized_height, Image.ANTIALIAS)
+        img1 = img1.resize((resized_width, resized_height), Image.ANTIALIAS)
         imagg = ImageTk.PhotoImage(img1)
         if resized_width < image_area.winfo_width() - 4:  # check if image is less wide than the canvas
             centering_width = (image_area.winfo_width() - resized_width) / 2
@@ -136,7 +137,7 @@ def nextImage():
         else:
             image_area.create_image(0, 0, image=imagg, anchor=NW)
     except:
-        tkinter.messagebox.showwarning("Warning", "Please press the Previous button")
+        tkinter.messagebox.showwarning("Warning", "no next image available.")
 
 
 def prevImage():
@@ -146,18 +147,18 @@ def prevImage():
         image = folderList.get(next_one)
         img1 = Image.open(image)
         resized_width, resized_height = resize_image(img1.width, img1.height)
-        img1 = img1.resize(resized_width, resized_height, Image.ANTIALIAS)
-        # imagg = ImageTk.PhotoImage(img1)
+        img1 = img1.resize((resized_width, resized_height), Image.ANTIALIAS)
+        imagg = ImageTk.PhotoImage(img1)
         if resized_width < image_area.winfo_width() - 4:  # check if image is less wide than the canvas
             centering_width = (image_area.winfo_width() - resized_width) / 2
-            image_area.create_image(centering_width, 0, image=img1, anchor=NW)
+            image_area.create_image(centering_width, 0, image=imagg, anchor=NW)
         elif resized_height < image_area.winfo_height() - 4:  # check if image is taller than the canvas
             centering_height = (image_area.winfo_height() - resized_height) / 2
-            image_area.create_image(0, centering_height, image=img1, anchor=NW)
+            image_area.create_image(0, centering_height, image=imagg, anchor=NW)
         else:
-            image_area.create_image(0, 0, image=img1, anchor=NW)
+            image_area.create_image(0, 0, image=imagg, anchor=NW)
     except:
-        tkinter.messagebox.showwarning("Warning", "Please press the Next button")
+        tkinter.messagebox.showwarning("Warning", "no previous image available.")
 
 
 # connecting arrows to functions
@@ -201,16 +202,36 @@ def draw_rect(self):
 
 
 def create_polygon():
-    if topx in polygon_point_coord and topy in polygon_point_coord:
-        image_area.create_polygon(polygon_point_coord)
-    else:
-        image_area.bind('<Button-1>', create_oval)
-        polygon_point_coord.append((topx, topy))
+    image_area.bind('<Button-1>', create_oval)
 
 
 def create_oval(event):
-    xcoord, ycoord = image_area.canvasx(event.x), image_area.canvasy(event.y)
-    image_area.create_oval((xcoord - 10, ycoord + 10, xcoord + 10, ycoord - 10))
+    try:
+        first_oval_coordx, first_oval_coordy = polygon_point_coord[0]
+    except:
+        first_oval_coordx, first_oval_coordy = -100, -100
+
+    if (currentx > first_oval_coordx + 10 or currentx < first_oval_coordx - 10) or (currenty < first_oval_coordy - 10 or currenty > first_oval_coordy + 10):
+        xcoord, ycoord = image_area.canvasx(event.x), image_area.canvasy(event.y)
+        oval = image_area.create_oval((xcoord - 7, ycoord + 7, xcoord + 7, ycoord - 7), fill="blue", outline="blue")  # finds coords of cursor and makes oval
+        image_area.tag_bind(oval, '<Enter>', enter_poly)
+        image_area.tag_bind(oval, '<Leave>', leave_poly)  # binds events to each oval
+        polygon_point_coord.append((xcoord, ycoord))  # saves coords of ovals, idk if needed
+    else:
+        image_area.create_polygon(polygon_point_coord)
+        image_area.unbind('<Button-1>')
+
+
+def enter_poly(event):
+    oval = image_area.find_closest(event.x, event.y)[0]
+    if oval == 1:
+        image_area.itemconfig(oval, fill="green", outline="green")
+
+
+def leave_poly(event):
+    oval = image_area.find_closest(event.x, event.y)[0]
+    if oval == 1:
+        image_area.itemconfig(oval, fill="blue", outline="blue")
 
 
 def cropImages():
@@ -235,6 +256,7 @@ def saveAnnotations():
         print(os.path.join(prodDir, "img" + str(i) + ".jpg"))
         img1.save(os.path.join(prodDir, "img" + str(i) + ".jpg"))
     tk.messagebox.showinfo("Completed ", "Annotations has been saved successfully")
+    # beetje research gedaan, lambda handler zou dit in coco mogelijk kunnen maken
 
 
 def clearRectangles():
@@ -249,6 +271,11 @@ def clearRectangles():
 
     image_area.pack()
     window.mainloop()
+
+
+def motion(event):
+    global currentx, currenty
+    currentx, currenty = image_area.canvasx(event.x), image_area.canvasy(event.y)
 
 
 def on_press_save():
@@ -356,6 +383,7 @@ createPolygonBtn.grid(row=10, column=0)
 image_area = Canvas(canvasFrame, bg='grey')
 image_area.grid(row=0, column=1, sticky='nsew')
 image_area.pack(fill='both', expand=True)
+image_area.bind('<Motion>', motion)
 
 # listbox for labels
 list = Listbox(propertiesFrame, width=40, height=20)
