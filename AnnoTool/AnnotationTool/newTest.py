@@ -1,7 +1,9 @@
 import os
 import tkinter
 import tkinter.messagebox
+from cProfile import label
 from tkinter import *
+from tkinter import ttk
 from tkinter.ttk import *
 import cv2
 from PIL import Image, ImageTk
@@ -272,6 +274,122 @@ def clearRectangles():
     image_area.pack()
     window.mainloop()
 
+# hier wordt door mij aan gewerkt
+def click_tutorial():
+    global popup
+    popup = Toplevel(window)
+    popup.title("Tutorial")
+    popup.geometry("200x100")
+
+    introduction_label = Label(popup, text="Greetings and thank you for using our annotation tool."
+                                            " in this window we will go over the functionality of the application itself and the ways you're able to interact with it."
+                                            "\nlet's start with the left side buttons from top to bottom: ")
+
+    open_labels = Label(popup, text="the first button you see is called open, with this button you wil be able to place a singular image inside the gray middle area of your screen."
+                                     " placing this image will allow you to make use of later mentioned buttons and their functionality."
+                                     "\nan alternative way of using this functionality is via pressing Control + o on your keyboard at the same time or by selecting new on the"
+                                     " navbar under file"
+                                     "\n"
+                                     "\nsidenote: these keybinds and navbar items will be mentioned for each and every functionality that can be accessed by one or the other"
+                                     "\n"
+                                     "\nthe second button seen on the top right is called open folder, instead of a singular image this button will allow you to place a set of images"
+                                     " stored inside of a folder inside the middle gray area of the application. to the lower right of the screen will you be able to see the images"
+                                     "\nthat are contained within a selected folder displayed under the little area named Images in the folder."
+                                     "\nthis button can also be alternatively be accessed via the combination of Control + f on your keyboard or the navbar when selecting open folder"
+                                     " under file")
+
+    save_labels = Label(popup, text="next up are the two save buttons, the first of the two is simply named save, this button wil save the made annotations to whereever on your computer"
+                                    " you decide to save it inside your file explorer"
+                                    "\n it can be accessed with the combination of Control + s or on the navbar by selecting save annotation under file"
+                                    "\n"
+                                    "\n the second save option named save as is meant for saving where you want to alter the format you save in aswell as choose where you want to save"
+                                    "the annotation")
+
+    annotations_label = Label(popup, text="the following two buttons are used for making and removing annotations."
+                                          "\nthe first one in line named Draw Rect is used for drawing rectangles on a image that can be saved as annotations. these can be drawn within"
+                                          " the grey area where the image resides starting from one corner of the rectangle moving the mouse towards where the opposite corner would be"
+                                          "\n"
+                                          "\nthe way to remove these annotations made by using draw rectangle is via the button named Clear annotations. This will remove all rectangles and"
+                                          "\npolygons from the currently selected image"
+                                          "\nthe keybind to alternatively use this function is the combination of Control + z")
+
+    zoom_label = Label(popup, text="coming up next are the zoom buttons starting with the first one named zoom in. zoom in, when being pressed will enlarge the picture making a certained"
+                                   "\npart of the image come closer up on the screen"
+                                   "\nthis will also be possible to use when pressing the upwards arrow key on your keyboard"
+                                   "\n"
+                                   "\nto opposite is able to be done aswell with the zoom out button. instead of enlarging the currently selected picture this will make the picture more"
+                                   " distant from the screen shrinking the image inside of the gray area"
+                                   "\nthis can be done via the downward arrow key on your keyboard")
+
+    selection_label = Label(popup, text="following up from the zoom buttons we have the navigation buttons for folders. beginning with the button next image."
+                                        "\nthis button will be able to be used when a folder has been selected instead of a singular image the button will allow you to proceed to image that"
+                                        " is next in line within the folder"
+                                        "\nthis can be utilized just like with the zoom buttons and their arrow key keybinds. with the keybind of this function being the right arrow key."
+                                        "\n"
+                                        "\nthe button named previous image below it does the exact opposite, allowing you to move to a previous image within the selected folder instead of "
+                                        " procedding to the next image"
+                                        "\nthis button can be used with a arrow key aswell with the keybind being the left arrow key on your keyboard.")
+
+    polygon_label = Label(popup, text="the last button included on the last side of the screen is named create polygon."
+                                      "\n"
+                                      "\nthis button will allow you to place small circles within the image selected. placing enough of these will make a annotation with the shape being made up "
+                                      " of the connections that are visible as lines between the placed dots connecting with eachother based on the order they are placed in. (to name a example:"
+                                      "\nthe first circle connects with the second one which in turn connects with the third one. this can go on until the last one is placed on the same spot as"
+                                      " the first circle creating the polygon annotation."
+                                      "\n")
+
+    navitems_label = Label(popup, text="from here we're going to cover the navbar items. those that are already mentioned are repeated here in short as a quick reminder of their function."
+                                       " these parts are categorized based on what navbar item they reside in")
+
+    file_label = Label(popup, text="(File)"
+                                   " this contains everything surrounding loading in the files you want to work on aswell as closing it"
+                                   " (New):"
+                                   " wil allow you to choose an image that will replace what is currently selected"
+                                   " (Open Folder):"
+                                   " allows you to open a entire folder full of images (content displayed in lower right section of the application)"
+                                   " Save Annotation:"
+                                   " saves your annotation in the location of your choosing"
+                                   " (Close Image):"
+                                   " emptying the gray area (if you haven't saved beforehand this data might be lost)"
+                                   " (Exit):"
+                                   " closes the program")
+
+    edit_label = Label(popup, text="(Edit)"
+                                   " revolves around adding, altering and deleting of annotations"
+                                   " (Select Area):"
+                                   " allows you to draw a rectangle just like the button draw rectangle allows you to"
+                                   " (Show Area):"
+                                   " shows the annotations only in a newly created window"
+                                   " (Delete Area):"
+                                   " deletes all annotations like with the clear annotation buttons")
+
+    view_label = Label(popup, text="(View)"
+                                   " this sections is used for changing how you want the image to be seen within the gray area of the application"
+                                   " (Zoom In):"
+                                   " get a closer up view of the image with each press of the button"
+                                   " (Zoom Out):"
+                                   " get a further away view of the image with each press of the button"
+                                   " (Show Labels):")
+
+    help_label = Label(popup, text="(Help)"
+                                   " helps out when things are unclear or to learn specifics about the application itself"
+                                   " (Tutorial):"
+                                   " pressing this will allow you to view the window with explanations you are currently reading"
+                                   " (About...):"
+                                   " some extra information about the application itself")
+    introduction_label.pack(anchor="w")
+    open_labels.pack(anchor="w")
+    save_labels.pack(anchor="w")
+    annotations_label.pack(anchor="w")
+    zoom_label.pack(anchor="w")
+    selection_label.pack(anchor="w")
+    polygon_label.pack(anchor="w")
+    navitems_label.pack(anchor="w")
+    file_label.pack(anchor="w")
+    edit_label.pack(anchor="w")
+    view_label.pack(anchor="w")
+    help_label.pack(anchor="w")
+# tot en met hier
 
 def motion(event):
     global currentx, currenty
@@ -437,7 +555,7 @@ viewMenu.add_command(label="Show Labels")
 menubar.add_cascade(label="View", menu=viewMenu)
 
 helpmenu = Menu(menubar, tearoff=0)
-helpmenu.add_command(label="Tutorial")
+helpmenu.add_command(label="Tutorial", command=click_tutorial)
 helpmenu.add_command(label="About...")
 menubar.add_cascade(label="Help", menu=helpmenu)
 window.config(menu=menubar)
