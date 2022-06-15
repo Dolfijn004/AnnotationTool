@@ -185,22 +185,36 @@ def resize_image(width, height):
 
 
 def get_mouse_posn(event):
-    global topy, topx
+    global rect_id
+    global topx, topy
+    global rect_list
     topx, topy = image_area.canvasx(event.x), image_area.canvasy(event.y)  # convert to real canvas coordinates
+    rect_id = image_area.create_rectangle(topx, topy, topx, topy, outline="green", fill="grey", activefill="blue",
+                                          stipple="gray12")
+
 
 
 def update_sel_rect(event):
-    global botx, boty
-    botx, boty = image_area.canvasx(event.x), image_area.canvasy(event.y)  # convert to real canvas coordinates
-    image_area.coords(rect_id, topx, topy, botx,
-                      boty)  # Update selection rect.   #  doet atm niks want rect_id wordt nergens aangemaakt
-    #  kan ook niet want rect wordt gemaakt op release event
+    global rect_id
+    global topx, topy, botx, boty
+    global rect_list
+    curx = image_area.canvasx(event.x)
+    botx = curx
+    cury = image_area.canvasy(event.y)
+    boty = cury
+    image_area.coords(rect_id, topx, topy, curx, cury)
+
 
 
 def draw_rect(self):
-    draw_data = image_area.create_rectangle(topx, topy, botx, boty, outline="green", fill="")
-    rect_list.append((topx, topy, botx, boty))
-    rect_main_data.append(draw_data)
+    global topx, topy, botx, boty
+    global rect_id
+    global rect_list
+    image_area.coords(rect_id, topx, topy, botx, boty)
+    rect_list.append(rect_id)
+    image_area.unbind('<ButtonPress-1>')
+    image_area.unbind('<B1-Motion')
+    image_area.unbind('<ButtonRelease-1>')
 
 
 def create_polygon():
@@ -237,7 +251,6 @@ def leave_poly(event):
 
 
 def cropImages():
-    rect_id = image_area.create_rectangle(topx, topy, topx, topy, dash=(2, 2), fill='', outline='red')
     image_area.bind('<Button-1>', get_mouse_posn)
     image_area.bind('<B1-Motion>', update_sel_rect)
     image_area.bind('<ButtonRelease-1>', draw_rect)
@@ -264,15 +277,33 @@ def saveAnnotations():
 def clearRectangles():
     global rect_main_data
     global rect_list
+    global rect_id
 
-    if len(rect_main_data) > 0:
-        for rect in rect_main_data:
-            image_area.delete(rect)
-    rect_main_data.clear()
+    print(rect_list)
+
+    image_area.delete(rect_id)
+    rect_list.pop
+
+    print(rect_list)
+    image_area.pack()
+    window.mainloop()
+
+
+def clearAllRectangles():
+    global rect_main_data
+    global rect_list
+    global rect_id
+
+    print(rect_list)
+    image_area.delete(rect_id)
+    for i in rect_list:
+        image_area.delete(i)
     rect_list.clear()
+    print(rect_list)
 
     image_area.pack()
     window.mainloop()
+
 
 # hier wordt door mij aan gewerkt
 def click_tutorial():
@@ -484,18 +515,20 @@ saveAsButton = Button(buttonFrame, text="Save As", style="W.TButton")
 saveAsButton.grid(row=3, column=0)
 drawAnnotationBtn = Button(buttonFrame, text="Draw Rect", style="W.TButton", command=cropImages)
 drawAnnotationBtn.grid(row=4, column=0)
-clearRecButton = Button(buttonFrame, text="Clear Annotations", style="W.TButton", command=clearRectangles)
+clearRecButton = Button(buttonFrame, text="Clear Last Annotation", style="W.TButton", command=clearRectangles)
 clearRecButton.grid(row=5, column=0)
+clearRecButton = Button(buttonFrame, text="Clear All Annotations", style="W.TButton", command=clearAllRectangles)
+clearRecButton.grid(row=6, column=0)
 zoomInButton = Button(buttonFrame, text="Zoom In", style="W.TButton")
-zoomInButton.grid(row=6, column=0)
+zoomInButton.grid(row=7, column=0)
 zoomOutButton = Button(buttonFrame, text="Zoom Out", style="W.TButton")
-zoomOutButton.grid(row=7, column=0)
+zoomOutButton.grid(row=8, column=0)
 nextImage = Button(buttonFrame, text="Next Image", style="W.TButton", command=nextImage)
-nextImage.grid(row=8, column=0)
+nextImage.grid(row=9, column=0)
 preImage = Button(buttonFrame, text="Prev Image", style="W.TButton", command=prevImage)
-preImage.grid(row=9, column=0)
+preImage.grid(row=10, column=0)
 createPolygonBtn = Button(buttonFrame, text="Create poly", style="W.TButton", command=create_polygon)
-createPolygonBtn.grid(row=10, column=0)
+createPolygonBtn.grid(row=11, column=0)
 
 # canvas
 image_area = Canvas(canvasFrame, bg='grey')
