@@ -1,19 +1,16 @@
-import os
+import glob
 import tkinter
 import tkinter.messagebox
 from tkinter import *
 from tkinter.ttk import *
-import cv2
-from PIL import Image, ImageTk
-import cv2 as cv
-import numpy as np
-from PIL.features import codecs
 import os
 import tkinter as tk
 import tkinter.filedialog as filedialog
+
+import cv2
+import numpy as np
 from PIL import Image, ImageTk, ImageGrab
-from pynput import keyboard
-from pynput.keyboard import Listener
+import json
 
 WIDTH, HEIGHT = 1200, 800
 topx, topy, botx, boty = 0, 0, 0, 0
@@ -54,6 +51,7 @@ def GetImageFilePath():
     global img
     global canvas
     global ImageFrame
+    global image_area
     test = False
     ImageFilePath = filedialog.askopenfilename()
     ImgOpen = Image.open(ImageFilePath)
@@ -76,17 +74,22 @@ def GetImageFilePath():
         window.mainloop()
 
 
+
+
 def openFolder():
     global image
     global pic
     global images
     global picOpen
     global ImageFound
+    global img
+    global image_area
+    global allImages
     directory = filedialog.askdirectory()
     os.chdir(directory)  # it permits to change the current dir
     allImages = os.listdir()
     allImages.reverse()
-    for image in allImages:  # it returns the list of files song
+    for image in allImages:  # it returns the list of files
         pos = 0
         if image.endswith(('png', 'jpg', 'jpeg', 'ico')):
             folderList.insert(pos, image)
@@ -104,65 +107,129 @@ def openFolder():
         test = True
         resized_width, resized_height = resize_image(img1.width, img1.height)
         picOpen = img1.resize((resized_width, resized_height), Image.ANTIALIAS)
-        imgg = ImageTk.PhotoImage(picOpen)
+        img = ImageTk.PhotoImage(picOpen)
         if resized_width < image_area.winfo_width() - 4:  # check if image is less wide than the canvas
             centering_width = (image_area.winfo_width() - resized_width) / 2
-            image_area.create_image(centering_width, 0, image=imgg, anchor=NW)
+            image_area.create_image(centering_width, 0, image=img, anchor=NW)
         elif resized_height < image_area.winfo_height() - 4:  # check if image is taller than the canvas
             centering_height = (image_area.winfo_height() - resized_height) / 2
-            image_area.create_image(0, centering_height, image=imgg, anchor=NW)
+            image_area.create_image(0, centering_height, image=img, anchor=NW)
         else:
-            image_area.create_image(0, 0, image=imgg, anchor=NW)
-
+            image_area.create_image(0, 0, image=img, anchor=NW)
     if (test):
         window.mainloop()
 
-
-def nextImage():
-    try:
-        next_one = folderList.curselection()
-        next_one = next_one[0] + 1
-        image = folderList.get(next_one)
-        img1 = Image.open(image)
-        resized_width, resized_height = resize_image(img1.width, img1.height)
-        img1 = img1.resize(resized_width, resized_height, Image.ANTIALIAS)
-        imagg = ImageTk.PhotoImage(img1)
+def showimage(event):
+    global image
+    global pic
+    global images
+    global picOpen
+    global ImageFound
+    global img
+    global image_area
+    global allImages
+    n = folderList.curselection()
+    folderList.selection_set(n)
+    folderList.see(n)
+    folderList.activate(n)
+    folderList.selection_anchor(n)
+    image = folderList.curselection()
+    images = folderList.get(image)
+    ImgOpen = Image.open(images)
+    ImageFound = True
+    if len(images) > 0:
+        test = True
+        resized_width, resized_height = resize_image(ImgOpen.width, ImgOpen.height)
+        # img1 = ImgOpen.resize(resized_width, resized_height, Image.ANTIALIAS)
+        img = ImageTk.PhotoImage(ImgOpen)
         if resized_width < image_area.winfo_width() - 4:  # check if image is less wide than the canvas
             centering_width = (image_area.winfo_width() - resized_width) / 2
-            image_area.create_image(centering_width, 0, image=imagg, anchor=NW)
+            image_area.create_image(centering_width, 0, image=img, anchor=NW)
         elif resized_height < image_area.winfo_height() - 4:  # check if image is taller than the canvas
             centering_height = (image_area.winfo_height() - resized_height) / 2
-            image_area.create_image(0, centering_height, image=imagg, anchor=NW)
+            image_area.create_image(0, centering_height, image=img, anchor=NW)
         else:
-            image_area.create_image(0, 0, image=imagg, anchor=NW)
+            image_area.create_image(0, 0, image=img, anchor=NW)
+    if (test):
+        window.mainloop()
+
+window.bind("<<ListboxSelect>>", showimage)
+
+
+def nextImage():
+    global image
+    global pic
+    global images
+    global ImageFound
+    global img
+    global image_area
+    global allImages
+    try:
+        folderList.selection_clear()
+        next_one = folderList.curselection()
+        next_one = next_one[0] + 1
+        folderList.selection_set(next_one)
+        folderList.activate(next_one)
+        folderList.selection_anchor(next_one)
+        image = folderList.curselection()
+        images = folderList.get(image)
+        ImgOpen = Image.open(images)
+        ImageFound = True
+        if len(images) > 0:
+            test = True
+            resized_width, resized_height = resize_image(ImgOpen.width, ImgOpen.height)
+            #img1 = ImgOpen.resize(resized_width, resized_height, Image.ANTIALIAS)
+            img = ImageTk.PhotoImage(ImgOpen)
+            if resized_width < image_area.winfo_width() - 4:  # check if image is less wide than the canvas
+                centering_width = (image_area.winfo_width() - resized_width) / 2
+                image_area.create_image(centering_width, 0, image=img, anchor=NW)
+            elif resized_height < image_area.winfo_height() - 4:  # check if image is taller than the canvas
+                centering_height = (image_area.winfo_height() - resized_height) / 2
+                image_area.create_image(0, centering_height, image=img, anchor=NW)
+            else:
+                image_area.create_image(0, 0, image=img, anchor=NW)
+        if (test):
+            window.mainloop()
     except:
         tkinter.messagebox.showwarning("Warning", "Please press the Previous button")
 
 
 def prevImage():
+    global image
+    global pic
+    global images
+    global ImageFound
+    global img
+    global image_area
+    global allImages
     try:
-        next_one = folderList.curselection()
-        next_one = next_one[0] - 1
-        image = folderList.get(next_one)
-        img1 = Image.open(image)
-        resized_width, resized_height = resize_image(img1.width, img1.height)
-        img1 = img1.resize(resized_width, resized_height, Image.ANTIALIAS)
-        # imagg = ImageTk.PhotoImage(img1)
-        if resized_width < image_area.winfo_width() - 4:  # check if image is less wide than the canvas
-            centering_width = (image_area.winfo_width() - resized_width) / 2
-            image_area.create_image(centering_width, 0, image=img1, anchor=NW)
-        elif resized_height < image_area.winfo_height() - 4:  # check if image is taller than the canvas
-            centering_height = (image_area.winfo_height() - resized_height) / 2
-            image_area.create_image(0, centering_height, image=img1, anchor=NW)
-        else:
-            image_area.create_image(0, 0, image=img1, anchor=NW)
+        prev_one = folderList.curselection()
+        prev_one = prev_one[0] - 1
+        folderList.selection_set(prev_one)
+        folderList.activate(prev_one)
+        folderList.selection_anchor(prev_one)
+        image = folderList.curselection()
+        images = folderList.get(image)
+        ImgOpen = Image.open(images)
+        ImageFound = True
+        if len(images) > 0:
+            test = True
+            resized_width, resized_height = resize_image(ImgOpen.width, ImgOpen.height)
+            # img1 = ImgOpen.resize(resized_width, resized_height, Image.ANTIALIAS)
+            img = ImageTk.PhotoImage(ImgOpen)
+            if resized_width < image_area.winfo_width() - 4:  # check if image is less wide than the canvas
+                centering_width = (image_area.winfo_width() - resized_width) / 2
+                image_area.create_image(centering_width, 0, image=img, anchor=NW)
+            elif resized_height < image_area.winfo_height() - 4:  # check if image is taller than the canvas
+                centering_height = (image_area.winfo_height() - resized_height) / 2
+                image_area.create_image(0, centering_height, image=img, anchor=NW)
+            else:
+                image_area.create_image(0, 0, image=img, anchor=NW)
+        if (test):
+            window.mainloop()
     except:
         tkinter.messagebox.showwarning("Warning", "Please press the Next button")
 
-
-# connecting arrows to functions
-# window.bind('<Right>', lambda x: nextImage())
-# window.bind('<Left>', lambda x: preImage())
 
 def resize_image(width, height):
     canvas_width = image_area.winfo_width()
@@ -339,7 +406,7 @@ saveAsButton = Button(buttonFrame, text="Save As", style="W.TButton")
 saveAsButton.grid(row=3, column=0)
 drawAnnotationBtn = Button(buttonFrame, text="Draw Rect", style="W.TButton", command=cropImages)
 drawAnnotationBtn.grid(row=4, column=0)
-clearRecButton = Button(buttonFrame, text="Clear Annotations", style="W.TButton", command=clearRectangles)
+clearRecButton = Button(buttonFrame, text="Clear Anno", style="W.TButton", command=clearRectangles)
 clearRecButton.grid(row=5, column=0)
 zoomInButton = Button(buttonFrame, text="Zoom In", style="W.TButton")
 zoomInButton.grid(row=6, column=0)
@@ -358,7 +425,7 @@ image_area.grid(row=0, column=1, sticky='nsew')
 image_area.pack(fill='both', expand=True)
 
 # listbox for labels
-list = Listbox(propertiesFrame, width=40, height=20)
+list = Listbox(propertiesFrame, width=40, height=20, selectmode=SINGLE)
 list.grid(row=2, column=2)
 # entry
 entryButton = Button(propertiesFrame, text="Add label", width=20)
