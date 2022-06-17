@@ -346,6 +346,25 @@ def saveAnnotations():
     tk.messagebox.showinfo("Completed ", "Annotations has been saved successfully")
     # beetje research gedaan, lambda handler zou dit in coco mogelijk kunnen maken
 
+# json annotation save
+def save_json(data, filename="Annotation.json"):
+    with open(filename, "w") as f:
+        json.dump(data, f, indent=4)
+
+    with open("Annotation.json") as json_file:
+        data = json.load(json_file)
+        temp = data["annotations"]
+        info = {"annoId": 1, "bbox": [212, 232, 41, 212], "heigth": 134, "width": 123, "image_associated": "none"}
+        data.append(info)
+
+def image_json(data, filename="Annotation.json"):
+    with open(filename, "w") as f:
+        json.dump(data, f, indent=4)
+
+    with open("Annotation.json") as image_file:
+        data = json.load(image_file)
+
+# json save end
 
 def clearRectangles():
     global rect_main_data
