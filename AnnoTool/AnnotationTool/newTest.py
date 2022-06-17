@@ -3,11 +3,16 @@ import tkinter
 import tkinter.messagebox
 from tkinter import *
 from tkinter.ttk import *
+import cv2 as cv
+import numpy as np
+from PIL.features import codecs
 import os
 import tkinter as tk
 import tkinter.filedialog as filedialog
 from PIL import Image, ImageTk, ImageGrab
-
+from pynput import keyboard
+from pynput.keyboard import Listener
+import json
 
 WIDTH, HEIGHT = 1200, 800
 topx, topy, botx, boty = 0, 0, 0, 0
@@ -37,7 +42,8 @@ style = Style()
 style.configure('W.TButton', font=
 ('calibri', 9, 'bold'),
                 foreground='black',
-                padding=[30, 10, 30, 10])
+                padding=[30, 10, 30, 10],
+                width=18)
 
 
 # functions
@@ -85,11 +91,11 @@ def openFolder():
     os.chdir(directory)  # it permits to change the current dir
     allImages = os.listdir()
     allImages.reverse()
-    for image in allImages:  # it returns the list of files
-         pos = 0
-         if image.endswith(('png', 'jpg', 'jpeg', 'ico')):
-             folderList.insert(pos, image)
-             pos += 1
+    for image in allImages:  # it returns the list of files song    song? what song?:p
+        pos = 0
+        if image.endswith(('png', 'jpg', 'jpeg', 'ico')):
+            folderList.insert(pos, image)
+            pos += 1
     folderList.selection_set(0)
     folderList.see(0)
     folderList.activate(0)
@@ -138,8 +144,8 @@ def nextImage():
         if len(images) > 0:
             test = True
             resized_width, resized_height = resize_image(ImgOpen.width, ImgOpen.height)
-            # img1 = ImgOpen.resize(resized_width, resized_height, Image.ANTIALIAS)
-            img = ImageTk.PhotoImage(ImgOpen)
+            img1 = ImgOpen.resize((resized_width, resized_height), Image.ANTIALIAS)
+            img = ImageTk.PhotoImage(img1)
             if resized_width < image_area.winfo_width() - 4:  # check if image is less wide than the canvas
                 centering_width = (image_area.winfo_width() - resized_width) / 2
                 image_area.create_image(centering_width, 0, image=img, anchor=NW)
@@ -176,8 +182,8 @@ def prevImage():
         if len(images) > 0:
             test = True
             resized_width, resized_height = resize_image(ImgOpen.width, ImgOpen.height)
-            # img1 = ImgOpen.resize(resized_width, resized_height, Image.ANTIALIAS)
-            img = ImageTk.PhotoImage(ImgOpen)
+            img1 = ImgOpen.resize((resized_width, resized_height), Image.ANTIALIAS)
+            img = ImageTk.PhotoImage(img1)
             if resized_width < image_area.winfo_width() - 4:  # check if image is less wide than the canvas
                 centering_width = (image_area.winfo_width() - resized_width) / 2
                 image_area.create_image(centering_width, 0, image=img, anchor=NW)
@@ -213,8 +219,8 @@ def showimage(event):
     if len(images) > 0:
         test = True
         resized_width, resized_height = resize_image(ImgOpen.width, ImgOpen.height)
-        # img1 = ImgOpen.resize(resized_width, resized_height, Image.ANTIALIAS) #wordt niet geresized
-        img = ImageTk.PhotoImage(ImgOpen)
+        img1 = ImgOpen.resize((resized_width, resized_height), Image.ANTIALIAS) #wordt niet geresized
+        img = ImageTk.PhotoImage(img1)
         if resized_width < image_area.winfo_width() - 4:  # check if image is less wide than the canvas
             centering_width = (image_area.winfo_width() - resized_width) / 2
             image_area.create_image(centering_width, 0, image=img, anchor=NW)
@@ -255,7 +261,6 @@ def get_mouse_posn(event):
                                           stipple="gray12")
 
 
-
 def update_sel_rect(event):
     global rect_id
     global topx, topy, botx, boty
@@ -265,7 +270,6 @@ def update_sel_rect(event):
     cury = image_area.canvasy(event.y)
     boty = cury
     image_area.coords(rect_id, topx, topy, curx, cury)
-
 
 
 def draw_rect(self):
@@ -289,9 +293,11 @@ def create_oval(event):
     except:
         first_oval_coordx, first_oval_coordy = -100, -100
 
-    if (currentx > first_oval_coordx + 10 or currentx < first_oval_coordx - 10) or (currenty < first_oval_coordy - 10 or currenty > first_oval_coordy + 10):
+    if (currentx > first_oval_coordx + 10 or currentx < first_oval_coordx - 10) or (
+            currenty < first_oval_coordy - 10 or currenty > first_oval_coordy + 10):
         xcoord, ycoord = image_area.canvasx(event.x), image_area.canvasy(event.y)
-        oval = image_area.create_oval((xcoord - 7, ycoord + 7, xcoord + 7, ycoord - 7), fill="blue", outline="blue")  # finds coords of cursor and makes oval
+        oval = image_area.create_oval((xcoord - 7, ycoord + 7, xcoord + 7, ycoord - 7), fill="blue",
+                                      outline="blue")  # finds coords of cursor and makes oval
         image_area.tag_bind(oval, '<Enter>', enter_poly)
         image_area.tag_bind(oval, '<Leave>', leave_poly)  # binds events to each oval
         polygon_point_coord.append((xcoord, ycoord))  # saves coords of ovals, idk if needed
@@ -341,12 +347,7 @@ def clearRectangles():
     global rect_list
     global rect_id
 
-    print(rect_list)
-
     image_area.delete(rect_id)
-    rect_list.pop
-
-    print(rect_list)
     image_area.pack()
     window.mainloop()
 
@@ -356,15 +357,17 @@ def clearAllRectangles():
     global rect_list
     global rect_id
 
-    print(rect_list)
-    image_area.delete(rect_id)
     for i in rect_list:
         image_area.delete(i)
     rect_list.clear()
-    print(rect_list)
-
     image_area.pack()
     window.mainloop()
+
+
+def load_json(filepath):
+    f = open(filepath)
+    annos = json.load(f)
+    print(annos.keys)
 
 
 # hier wordt door mij aan gewerkt
@@ -375,28 +378,30 @@ def click_tutorial():
     popup.geometry("200x100")
 
     introduction_label = Label(popup, text="Greetings and thank you for using our annotation tool."
-                                            " in this window we will go over the functionality of the application itself and the ways you're able to interact with it."
-                                            "\nlet's start with the left side buttons from top to bottom: ")
+                                           " in this window we will go over the functionality of the application itself and the ways you're able to interact with it."
+                                           "\nlet's start with the left side buttons from top to bottom: ")
 
-    open_labels = Label(popup, text="the first button you see is called open, with this button you wil be able to place a singular image inside the gray middle area of your screen."
-                                     " placing this image will allow you to make use of later mentioned buttons and their functionality."
-                                     "\nan alternative way of using this functionality is via pressing Control + o on your keyboard at the same time or by selecting new on the"
-                                     " navbar under file"
-                                     "\n"
-                                     "\nsidenote: these keybinds and navbar items will be mentioned for each and every functionality that can be accessed by one or the other"
-                                     "\n"
-                                     "\nthe second button seen on the top right is called open folder, instead of a singular image this button will allow you to place a set of images"
-                                     " stored inside of a folder inside the middle gray area of the application. to the lower right of the screen will you be able to see the images"
-                                     "\nthat are contained within a selected folder displayed under the little area named Images in the folder."
-                                     "\nthis button can also be alternatively be accessed via the combination of Control + f on your keyboard or the navbar when selecting open folder"
-                                     " under file")
+    open_labels = Label(popup,
+                        text="the first button you see is called open, with this button you wil be able to place a singular image inside the gray middle area of your screen."
+                             " placing this image will allow you to make use of later mentioned buttons and their functionality."
+                             "\nan alternative way of using this functionality is via pressing Control + o on your keyboard at the same time or by selecting new on the"
+                             " navbar under file"
+                             "\n"
+                             "\nsidenote: these keybinds and navbar items will be mentioned for each and every functionality that can be accessed by one or the other"
+                             "\n"
+                             "\nthe second button seen on the top right is called open folder, instead of a singular image this button will allow you to place a set of images"
+                             " stored inside of a folder inside the middle gray area of the application. to the lower right of the screen will you be able to see the images"
+                             "\nthat are contained within a selected folder displayed under the little area named Images in the folder."
+                             "\nthis button can also be alternatively be accessed via the combination of Control + f on your keyboard or the navbar when selecting open folder"
+                             " under file")
 
-    save_labels = Label(popup, text="next up are the two save buttons, the first of the two is simply named save, this button wil save the made annotations to whereever on your computer"
-                                    " you decide to save it inside your file explorer"
-                                    "\n it can be accessed with the combination of Control + s or on the navbar by selecting save annotation under file"
-                                    "\n"
-                                    "\n the second save option named save as is meant for saving where you want to alter the format you save in aswell as choose where you want to save"
-                                    "the annotation")
+    save_labels = Label(popup,
+                        text="next up are the two save buttons, the first of the two is simply named save, this button wil save the made annotations to whereever on your computer"
+                             " you decide to save it inside your file explorer"
+                             "\n it can be accessed with the combination of Control + s or on the navbar by selecting save annotation under file"
+                             "\n"
+                             "\n the second save option named save as is meant for saving where you want to alter the format you save in aswell as choose where you want to save"
+                             "the annotation")
 
     annotations_label = Label(popup, text="the following two buttons are used for making and removing annotations."
                                           "\nthe first one in line named Draw Rect is used for drawing rectangles on a image that can be saved as annotations. these can be drawn within"
@@ -406,22 +411,24 @@ def click_tutorial():
                                           "\npolygons from the currently selected image"
                                           "\nthe keybind to alternatively use this function is the combination of Control + z")
 
-    zoom_label = Label(popup, text="coming up next are the zoom buttons starting with the first one named zoom in. zoom in, when being pressed will enlarge the picture making a certained"
-                                   "\npart of the image come closer up on the screen"
-                                   "\nthis will also be possible to use when pressing the upwards arrow key on your keyboard"
-                                   "\n"
-                                   "\nto opposite is able to be done aswell with the zoom out button. instead of enlarging the currently selected picture this will make the picture more"
-                                   " distant from the screen shrinking the image inside of the gray area"
-                                   "\nthis can be done via the downward arrow key on your keyboard")
+    zoom_label = Label(popup,
+                       text="coming up next are the zoom buttons starting with the first one named zoom in. zoom in, when being pressed will enlarge the picture making a certained"
+                            "\npart of the image come closer up on the screen"
+                            "\nthis will also be possible to use when pressing the upwards arrow key on your keyboard"
+                            "\n"
+                            "\nto opposite is able to be done aswell with the zoom out button. instead of enlarging the currently selected picture this will make the picture more"
+                            " distant from the screen shrinking the image inside of the gray area"
+                            "\nthis can be done via the downward arrow key on your keyboard")
 
-    selection_label = Label(popup, text="following up from the zoom buttons we have the navigation buttons for folders. beginning with the button next image."
-                                        "\nthis button will be able to be used when a folder has been selected instead of a singular image the button will allow you to proceed to image that"
-                                        " is next in line within the folder"
-                                        "\nthis can be utilized just like with the zoom buttons and their arrow key keybinds. with the keybind of this function being the right arrow key."
-                                        "\n"
-                                        "\nthe button named previous image below it does the exact opposite, allowing you to move to a previous image within the selected folder instead of "
-                                        " procedding to the next image"
-                                        "\nthis button can be used with a arrow key aswell with the keybind being the left arrow key on your keyboard.")
+    selection_label = Label(popup,
+                            text="following up from the zoom buttons we have the navigation buttons for folders. beginning with the button next image."
+                                 "\nthis button will be able to be used when a folder has been selected instead of a singular image the button will allow you to proceed to image that"
+                                 " is next in line within the folder"
+                                 "\nthis can be utilized just like with the zoom buttons and their arrow key keybinds. with the keybind of this function being the right arrow key."
+                                 "\n"
+                                 "\nthe button named previous image below it does the exact opposite, allowing you to move to a previous image within the selected folder instead of "
+                                 " procedding to the next image"
+                                 "\nthis button can be used with a arrow key aswell with the keybind being the left arrow key on your keyboard.")
 
     polygon_label = Label(popup, text="the last button included on the last side of the screen is named create polygon."
                                       "\n"
@@ -431,8 +438,9 @@ def click_tutorial():
                                       " the first circle creating the polygon annotation."
                                       "\n")
 
-    navitems_label = Label(popup, text="from here we're going to cover the navbar items. those that are already mentioned are repeated here in short as a quick reminder of their function."
-                                       " these parts are categorized based on what navbar item they reside in")
+    navitems_label = Label(popup,
+                           text="from here we're going to cover the navbar items. those that are already mentioned are repeated here in short as a quick reminder of their function."
+                                " these parts are categorized based on what navbar item they reside in")
 
     file_label = Label(popup, text="(File)"
                                    " this contains everything surrounding loading in the files you want to work on aswell as closing it"
@@ -482,6 +490,8 @@ def click_tutorial():
     edit_label.pack(anchor="w")
     view_label.pack(anchor="w")
     help_label.pack(anchor="w")
+
+
 # tot en met hier
 
 def motion(event):
