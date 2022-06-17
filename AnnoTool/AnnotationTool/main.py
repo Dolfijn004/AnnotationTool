@@ -265,7 +265,6 @@ def get_mouse_posn(event):
 def update_sel_rect(event):
     global rect_id
     global topx, topy, botx, boty
-    global rect_list
     curx = image_area.canvasx(event.x)
     botx = curx
     cury = image_area.canvasy(event.y)
@@ -596,7 +595,7 @@ window.grid_rowconfigure(0, weight=1)
 
 # buttons
 photoopen = PhotoImage(file="icons/new.png")
-openButton = Button(buttonFrame, text="Open", style="W.TButton", command=GetImageFilePath, image=photoopen, compound="top")
+openButton = Button(buttonFrame, text="Open Image", style="W.TButton", command=GetImageFilePath, image=photoopen, compound="top")
 openButton.grid(row=0, column=0)
 photofile = PhotoImage(file="icons/file.png")
 openFolderButton = Button(buttonFrame, text="Open Folder", style="W.TButton", command=openFolder, image=photofile, compound="top")
@@ -608,7 +607,7 @@ saveButton.grid(row=2, column=0)
 #saveAsButton = Button(buttonFrame, text="Save As", style="W.TButton", image=photosaveas, compound="top")
 #saveAsButton.grid(row=3, column=0)
 photorect = PhotoImage(file="icons/rect.png")
-drawAnnotationBtn = Button(buttonFrame, text="Draw Rect", style="W.TButton", command=cropImages, image=photorect, compound="top")
+drawAnnotationBtn = Button(buttonFrame, text="Draw Rectangle", style="W.TButton", command=cropImages, image=photorect, compound="top")
 drawAnnotationBtn.grid(row=4, column=0)
 photoundo = PhotoImage(file="icons/undo.png")
 clearRecButton = Button(buttonFrame, text="Clear Last Annotation", style="W.TButton", command=clearRectangles, image=photoundo, compound="top")
