@@ -363,6 +363,9 @@ def clearAllRectangles():
     image_area.pack()
     window.mainloop()
 
+def clear_image():
+    image_area.delete("all")
+
 
 def load_json(filepath):
     f = open(filepath)
@@ -609,7 +612,7 @@ preImage = Button(buttonFrame, text="Prev Image", style="W.TButton", command=pre
 preImage.grid(row=10, column=0)
 createPolygonBtn = Button(buttonFrame, text="Create poly", style="W.TButton", command=create_polygon)
 createPolygonBtn.grid(row=11, column=0)
-closeBtn = Button(buttonFrame, text="Close Image", style="W.TButton")
+closeBtn = Button(buttonFrame, text="Close Image", style="W.TButton", command=clear_image)
 closeBtn.grid(row=12, column=0)
 
 # canvas
