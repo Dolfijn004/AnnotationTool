@@ -108,10 +108,10 @@ def openFolder():
         resized_width, resized_height = resize_image(img1.width, img1.height)
         picOpen = img1.resize((resized_width, resized_height), Image.ANTIALIAS)
         img = ImageTk.PhotoImage(picOpen)
-        if resized_width < image_area.winfo_width() - 4:  # check if image is less wide than the canvas
+        if resized_width < image_area.winfo_width():  # check if image is less wide than the canvas
             centering_width = (image_area.winfo_width() - resized_width) / 2
             image_area.create_image(centering_width, 0, image=img, anchor=NW)
-        elif resized_height < image_area.winfo_height() - 4:  # check if image is taller than the canvas
+        elif resized_height < image_area.winfo_height():  # check if image is taller than the canvas
             centering_height = (image_area.winfo_height() - resized_height) / 2
             image_area.create_image(0, centering_height, image=img, anchor=NW)
         else:
@@ -183,10 +183,10 @@ def prevImage():
             resized_width, resized_height = resize_image(ImgOpen.width, ImgOpen.height)
             img1 = ImgOpen.resize((resized_width, resized_height), Image.ANTIALIAS)
             img = ImageTk.PhotoImage(img1)
-            if resized_width < image_area.winfo_width() - 4:  # check if image is less wide than the canvas
+            if resized_width < image_area.winfo_width():  # check if image is less wide than the canvas
                 centering_width = (image_area.winfo_width() - resized_width) / 2
                 image_area.create_image(centering_width, 0, image=img, anchor=NW)
-            elif resized_height < image_area.winfo_height() - 4:  # check if image is taller than the canvas
+            elif resized_height < image_area.winfo_height():  # check if image is taller than the canvas
                 centering_height = (image_area.winfo_height() - resized_height) / 2
                 image_area.create_image(0, centering_height, image=img, anchor=NW)
             else:
@@ -220,10 +220,10 @@ def showimage(event):
         resized_width, resized_height = resize_image(ImgOpen.width, ImgOpen.height)
         img1 = ImgOpen.resize((resized_width, resized_height), Image.ANTIALIAS)
         img = ImageTk.PhotoImage(img1)
-        if resized_width < image_area.winfo_width() - 4:  # check if image is less wide than the canvas
+        if resized_width < image_area.winfo_width():  # check if image is less wide than the canvas
             centering_width = (image_area.winfo_width() - resized_width) / 2
             image_area.create_image(centering_width, 0, image=img, anchor=NW)
-        elif resized_height < image_area.winfo_height() - 4:  # check if image is taller than the canvas
+        elif resized_height < image_area.winfo_height():  # check if image is taller than the canvas
             centering_height = (image_area.winfo_height() - resized_height) / 2
             image_area.create_image(0, centering_height, image=img, anchor=NW)
         else:
