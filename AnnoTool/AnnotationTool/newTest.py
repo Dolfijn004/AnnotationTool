@@ -35,14 +35,13 @@ style = Style()
 # naming that style variable as
 # W.Tbutton (TButton is used for ttk.Button).
 style.configure('W.TButton', font=
-('calibri', 9, 'bold'),
+('calibri', 10, 'bold'),
                 foreground='black',
-                padding=[30, 10, 30, 10])
+                padding=[30, 10, 30, 10],
+                width=18)
 
 
 # functions
-
-
 def GetImageFilePath():
     global ImageFilePath
     global ImageFound
@@ -125,7 +124,6 @@ def nextImage():
     global image_area
     global allImages
     try:
-        folderList.selection_clear()
         next_one = folderList.curselection()
         next_one = next_one[0] + 1
         folderList.selection_set(next_one)
@@ -138,8 +136,8 @@ def nextImage():
         if len(images) > 0:
             test = True
             resized_width, resized_height = resize_image(ImgOpen.width, ImgOpen.height)
-            # img1 = ImgOpen.resize(resized_width, resized_height, Image.ANTIALIAS)
-            img = ImageTk.PhotoImage(ImgOpen)
+            img1 = ImgOpen.resize((resized_width, resized_height), Image.ANTIALIAS)
+            img = ImageTk.PhotoImage(img1)
             if resized_width < image_area.winfo_width() - 4:  # check if image is less wide than the canvas
                 centering_width = (image_area.winfo_width() - resized_width) / 2
                 image_area.create_image(centering_width, 0, image=img, anchor=NW)
@@ -176,8 +174,8 @@ def prevImage():
         if len(images) > 0:
             test = True
             resized_width, resized_height = resize_image(ImgOpen.width, ImgOpen.height)
-            # img1 = ImgOpen.resize(resized_width, resized_height, Image.ANTIALIAS)
-            img = ImageTk.PhotoImage(ImgOpen)
+            img1 = ImgOpen.resize((resized_width, resized_height), Image.ANTIALIAS)
+            img = ImageTk.PhotoImage(img1)
             if resized_width < image_area.winfo_width() - 4:  # check if image is less wide than the canvas
                 centering_width = (image_area.winfo_width() - resized_width) / 2
                 image_area.create_image(centering_width, 0, image=img, anchor=NW)
@@ -213,8 +211,8 @@ def showimage(event):
     if len(images) > 0:
         test = True
         resized_width, resized_height = resize_image(ImgOpen.width, ImgOpen.height)
-        # img1 = ImgOpen.resize(resized_width, resized_height, Image.ANTIALIAS) #wordt niet geresized
-        img = ImageTk.PhotoImage(ImgOpen)
+        img1 = ImgOpen.resize((resized_width, resized_height), Image.ANTIALIAS)
+        img = ImageTk.PhotoImage(img1)
         if resized_width < image_area.winfo_width() - 4:  # check if image is less wide than the canvas
             centering_width = (image_area.winfo_width() - resized_width) / 2
             image_area.create_image(centering_width, 0, image=img, anchor=NW)
@@ -591,6 +589,8 @@ preImage = Button(buttonFrame, text="Prev Image", style="W.TButton", command=pre
 preImage.grid(row=10, column=0)
 createPolygonBtn = Button(buttonFrame, text="Create poly", style="W.TButton", command=create_polygon)
 createPolygonBtn.grid(row=11, column=0)
+closeBtn = Button(buttonFrame, text="Close Image", style="W.TButton", command=closeImg)
+closeBtn.grid(row=12, column=0)
 
 # canvas
 image_area = Canvas(canvasFrame, bg='grey')
@@ -627,19 +627,19 @@ folderList.grid(row=4, column=2)
 # menubar
 menubar = Menu(window)
 filemenu = Menu(menubar, tearoff=0)
-filemenu.add_command(label="New")
-filemenu.add_command(label="Open Folder")
+filemenu.add_command(label="New", command=GetImageFilePath)
+filemenu.add_command(label="Open Folder", command=openFolder)
 filemenu.add_command(label="Save Annotation")
 filemenu.add_separator()
-filemenu.add_command(label="Close Image")
+filemenu.add_command(label="Close Image",)
 filemenu.add_separator()
 filemenu.add_command(label="Exit", command=window.quit)
 menubar.add_cascade(label="File", menu=filemenu)
 
 editMenu = Menu(menubar, tearoff=0)
-editMenu.add_command(label="Select Area")
+editMenu.add_command(label="Select Area", command=draw_rect)
 editMenu.add_command(label="show Area")
-editMenu.add_command(label="Delete Area")
+editMenu.add_command(label="Delete Area", command= clearRectangles)
 menubar.add_cascade(label="Edit", menu=editMenu)
 
 viewMenu = Menu(menubar, tearoff=0)
