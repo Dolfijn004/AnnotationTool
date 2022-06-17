@@ -598,7 +598,7 @@ preImage = Button(buttonFrame, text="Prev Image", style="W.TButton", command=pre
 preImage.grid(row=10, column=0)
 createPolygonBtn = Button(buttonFrame, text="Create poly", style="W.TButton", command=create_polygon)
 createPolygonBtn.grid(row=11, column=0)
-closeBtn = Button(buttonFrame, text="Close Image", style="W.TButton", command=closeImg)
+closeBtn = Button(buttonFrame, text="Close Image", style="W.TButton")
 closeBtn.grid(row=12, column=0)
 
 # canvas
