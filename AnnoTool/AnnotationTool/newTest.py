@@ -89,7 +89,7 @@ def openFolder():
     os.chdir(directory)  # it permits to change the current dir
     allImages = os.listdir()
     allImages.reverse()
-    for image in allImages:  # it returns the list of files song    song? what song?:p
+    for image in allImages:  # it returns the list of files
         pos = 0
         if image.endswith(('png', 'jpg', 'jpeg', 'ico')):
             folderList.insert(pos, image)
@@ -131,6 +131,7 @@ def nextImage():
     try:
         next_one = folderList.curselection()
         next_one = next_one[0] + 1
+        folderList.selection_clear(0, 'end')
         folderList.selection_set(next_one)
         folderList.activate(next_one)
         folderList.selection_anchor(next_one)
@@ -143,10 +144,10 @@ def nextImage():
             resized_width, resized_height = resize_image(ImgOpen.width, ImgOpen.height)
             img1 = ImgOpen.resize((resized_width, resized_height), Image.ANTIALIAS)
             img = ImageTk.PhotoImage(img1)
-            if resized_width < image_area.winfo_width() - 4:  # check if image is less wide than the canvas
+            if resized_width < image_area.winfo_width():  # check if image is less wide than the canvas
                 centering_width = (image_area.winfo_width() - resized_width) / 2
                 image_area.create_image(centering_width, 0, image=img, anchor=NW)
-            elif resized_height < image_area.winfo_height() - 4:  # check if image is taller than the canvas
+            elif resized_height < image_area.winfo_height():  # check if image is taller than the canvas
                 centering_height = (image_area.winfo_height() - resized_height) / 2
                 image_area.create_image(0, centering_height, image=img, anchor=NW)
             else:
@@ -169,6 +170,7 @@ def prevImage():
     try:
         prev_one = folderList.curselection()
         prev_one = prev_one[0] - 1
+        folderList.selection_clear(0, 'end')
         folderList.selection_set(prev_one)
         folderList.activate(prev_one)
         folderList.selection_anchor(prev_one)
@@ -228,6 +230,7 @@ def showimage(event):
             image_area.create_image(0, 0, image=img, anchor=NW)
     if (test):
         window.mainloop()
+
 
 window.bind("<<ListboxSelect>>", showimage)
 
