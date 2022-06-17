@@ -369,6 +369,9 @@ def load_json(filepath):
     annos = json.load(f)
     print(annos.keys)
 
+def enterLabels():
+    enteredlabel = labelEntry.get()
+    list.insert(0, enteredlabel)
 
 # hier wordt door mij aan gewerkt
 def click_tutorial():
@@ -622,8 +625,12 @@ image_area.bind('<Motion>', motion)
 list = Listbox(propertiesFrame, width=40, height=20)
 list.grid(row=2, column=2)
 # entry
-entryButton = Button(propertiesFrame, text="Add label", width=20)
+entryButton = Button(propertiesFrame, text="Add label", width=20, command=enterLabels)
 entryButton.grid(row=1, column=2)
+
+
+
+
 # label
 labelEntry = Entry(propertiesFrame, width=30)
 labelEntry.grid(row=0, column=2)
@@ -635,13 +642,6 @@ label2.grid(row=3, column=2)
 folderList = Listbox(propertiesFrame, width=40, height=40)
 folderList.grid(row=4, column=2)
 
-# scrollbar
-# scrollbarH = Scrollbar(canvasFrame, orient="horizontal", command=image_area.xview)
-# scrollbarV = Scrollbar(canvasFrame, orient="vertical", command=image_area.yview)
-# image_area.configure(yscrollcommand=scrollbarV.set, xscrollcommand=scrollbarH.set)
-# image_area.configure(scrollregion=(0, 0, 1000, 1000))
-# scrollbarH.grid(sticky="we")
-# scrollbarV.grid(sticky="ns")
 
 
 # menubar
