@@ -322,7 +322,6 @@ def cropImages():
     image_area.bind('<Button-1>', get_mouse_posn)
     image_area.bind('<B1-Motion>', update_sel_rect)
     image_area.bind('<ButtonRelease-1>', draw_rect)
-    image_area.update()
 
 
 def saveAnnotations():
@@ -346,7 +345,6 @@ def clearRectangles():
     global rect_main_data
     global rect_list
     global rect_id
-
     image_area.delete(rect_id)
     image_area.pack()
     window.mainloop()
@@ -362,6 +360,9 @@ def clearAllRectangles():
     rect_list.clear()
     image_area.pack()
     window.mainloop()
+
+def clear_image():
+    image_area.delete("all")
 
 
 def load_json(filepath):
@@ -588,31 +589,42 @@ window.grid_columnconfigure(2, weight=1)
 window.grid_rowconfigure(0, weight=1)
 
 # buttons
-openButton = Button(buttonFrame, text="Open", style="W.TButton", command=GetImageFilePath)
+photoopen = PhotoImage(file="icons/new.png")
+openButton = Button(buttonFrame, text="Open", style="W.TButton", command=GetImageFilePath, image=photoopen, compound="top")
 openButton.grid(row=0, column=0)
-openFolderButton = Button(buttonFrame, text="Open Folder", style="W.TButton", command=openFolder)
+photofile = PhotoImage(file="icons/file.png")
+openFolderButton = Button(buttonFrame, text="Open Folder", style="W.TButton", command=openFolder, image=photofile, compound="top")
 openFolderButton.grid(row=1, column=0)
-saveButton = Button(buttonFrame, text="Save", style="W.TButton", command=saveAnnotations)
+photosave = PhotoImage(file="icons/save.png")
+saveButton = Button(buttonFrame, text="Save", style="W.TButton", command=saveAnnotations, image=photosave, compound="top")
 saveButton.grid(row=2, column=0)
-saveAsButton = Button(buttonFrame, text="Save As", style="W.TButton")
+photosaveas = PhotoImage(file="icons/save-as.png")
+saveAsButton = Button(buttonFrame, text="Save As", style="W.TButton", image=photosaveas, compound="top")
 saveAsButton.grid(row=3, column=0)
-drawAnnotationBtn = Button(buttonFrame, text="Draw Rect", style="W.TButton", command=cropImages)
+photorect = PhotoImage(file="icons/rect.png")
+drawAnnotationBtn = Button(buttonFrame, text="Draw Rect", style="W.TButton", command=cropImages, image=photorect, compound="top")
 drawAnnotationBtn.grid(row=4, column=0)
-clearRecButton = Button(buttonFrame, text="Clear Last Annotation", style="W.TButton", command=clearRectangles)
+photoundo = PhotoImage(file="icons/undo.png")
+clearRecButton = Button(buttonFrame, text="Clear Last Annotation", style="W.TButton", command=clearRectangles, image=photoundo, compound="top")
 clearRecButton.grid(row=5, column=0)
-clearRecButton = Button(buttonFrame, text="Clear All Annotations", style="W.TButton", command=clearAllRectangles)
+photobin = PhotoImage(file="icons/bin.png")
+clearRecButton = Button(buttonFrame, text="Clear All Annotations", style="W.TButton", command=clearAllRectangles, image=photobin, compound="top")
 clearRecButton.grid(row=6, column=0)
-zoomInButton = Button(buttonFrame, text="Zoom In", style="W.TButton")
-zoomInButton.grid(row=7, column=0)
-zoomOutButton = Button(buttonFrame, text="Zoom Out", style="W.TButton")
-zoomOutButton.grid(row=8, column=0)
-nextImage = Button(buttonFrame, text="Next Image", style="W.TButton", command=nextImage)
+#zoomInButton = Button(buttonFrame, text="Zoom In", style="W.TButton")
+#zoomInButton.grid(row=7, column=0)
+#zoomOutButton = Button(buttonFrame, text="Zoom Out", style="W.TButton")
+#zoomOutButton.grid(row=8, column=0)
+photonext = PhotoImage(file="icons/next.png")
+nextImage = Button(buttonFrame, text="Next Image", style="W.TButton", command=nextImage, image=photonext, compound="top")
 nextImage.grid(row=9, column=0)
-preImage = Button(buttonFrame, text="Prev Image", style="W.TButton", command=prevImage)
+photoprev = PhotoImage(file="icons/prev.png")
+preImage = Button(buttonFrame, text="Prev Image", style="W.TButton", command=prevImage, image=photoprev, compound="top")
 preImage.grid(row=10, column=0)
-createPolygonBtn = Button(buttonFrame, text="Create poly", style="W.TButton", command=create_polygon)
+photopoly = PhotoImage(file="icons/poly.png")
+createPolygonBtn = Button(buttonFrame, text="Create poly", style="W.TButton", command=create_polygon, image=photopoly, compound="top")
 createPolygonBtn.grid(row=11, column=0)
-closeBtn = Button(buttonFrame, text="Close Image", style="W.TButton")
+photocancel = PhotoImage(file="icons/cancel.png")
+closeBtn = Button(buttonFrame, text="Close Image", style="W.TButton", command=clear_image, image=photocancel, compound="top")
 closeBtn.grid(row=12, column=0)
 
 # canvas
