@@ -252,6 +252,7 @@ def resize_image(width, height):
         return width, height
 
 
+
 def get_mouse_posn(event):
     global rect_id
     global topx, topy
@@ -277,10 +278,15 @@ def draw_rect(self):
     global rect_id
     global rect_list
     image_area.coords(rect_id, topx, topy, botx, boty)
+    image_area.tag_bind(rect_id, '<Button-1>', select_rect)
     rect_list.append(rect_id)
-    image_area.unbind('<ButtonPress-1>')
-    image_area.unbind('<B1-Motion')
+    image_area.unbind('<Button-1>')
+    image_area.unbind('<B1-Motion>')
     image_area.unbind('<ButtonRelease-1>')
+
+
+def select_rect(event):
+    pass
 
 
 def create_polygon():
@@ -598,9 +604,9 @@ openFolderButton.grid(row=1, column=0)
 photosave = PhotoImage(file="icons/save.png")
 saveButton = Button(buttonFrame, text="Save", style="W.TButton", command=saveAnnotations, image=photosave, compound="top")
 saveButton.grid(row=2, column=0)
-photosaveas = PhotoImage(file="icons/save-as.png")
-saveAsButton = Button(buttonFrame, text="Save As", style="W.TButton", image=photosaveas, compound="top")
-saveAsButton.grid(row=3, column=0)
+#photosaveas = PhotoImage(file="icons/save-as.png")
+#saveAsButton = Button(buttonFrame, text="Save As", style="W.TButton", image=photosaveas, compound="top")
+#saveAsButton.grid(row=3, column=0)
 photorect = PhotoImage(file="icons/rect.png")
 drawAnnotationBtn = Button(buttonFrame, text="Draw Rect", style="W.TButton", command=cropImages, image=photorect, compound="top")
 drawAnnotationBtn.grid(row=4, column=0)
