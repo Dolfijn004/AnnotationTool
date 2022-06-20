@@ -50,6 +50,16 @@ def get_image_file_path():
     global canvas
     global image_frame
     global image_area
+    pre_image['state'] = tk.NORMAL
+    next_image['state'] = tk.NORMAL
+    draw_annotations_button['state'] = tk.NORMAL
+    create_polygon_button['state'] = tk.NORMAL
+    clear_rect_button['state'] = tk.NORMAL
+    clear_rect_button['state'] = tk.NORMAL
+    close_button['state'] = tk.NORMAL
+    clear_last_rect['state'] = tk.NORMAL
+    save_button['state'] = tk.NORMAL
+
     test = False
     image_file_path = filedialog.askopenfilename()
     img_open = Image.open(image_file_path)
@@ -82,6 +92,14 @@ def open_folder():
     global img
     global image_area
     global all_images
+    pre_image['state'] = tk.NORMAL
+    next_image['state'] = tk.NORMAL
+    draw_annotations_button['state'] = tk.NORMAL
+    create_polygon_button['state'] = tk.NORMAL
+    clear_rect_button['state'] = tk.NORMAL
+    clear_last_rect['state'] = tk.NORMAL
+    close_button['state'] = tk.NORMAL
+    save_button['state'] = tk.NORMAL
     directory = filedialog.askdirectory()
     os.chdir(directory)  # it permits to change the current dir
     all_images = os.listdir()
@@ -386,6 +404,13 @@ def clear_all_rectangles():
 # delete the image and it's annotations at once
 def clear_image():
     image_area.delete("all")
+    pre_image['state'] = tk.DISABLED
+    next_image['state'] = tk.DISABLED
+    draw_annotations_button['state'] = tk.DISABLED
+    create_polygon_button['state'] = tk.DISABLED
+    clear_rect_button['state'] = tk.DISABLED
+    clear_rect_button['state'] = tk.DISABLED
+
 
 
 #  enter labels into label_list
@@ -622,38 +647,38 @@ open_folder_button = Button(button_frame, text="Open Folder", style="W.TButton",
 open_folder_button.grid(row=1, column=0)
 photo_save = PhotoImage(file="icons/save.png")
 save_button = Button(button_frame, text="Save", style="W.TButton", command=save_annotations, image=photo_save,
-                     compound="top")
+                     compound="top", state=['disabled'])
 save_button.grid(row=2, column=0)
 # photosaveas = PhotoImage(file="icons/save-as.png")
 # saveAsButton = Button(button_frame, text="Save As", style="W.TButton", image=photosaveas, compound="top")
 # saveAsButton.grid(row=3, column=0)
 photo_rect = PhotoImage(file="icons/rect.png")
 draw_annotations_button = Button(button_frame, text="Draw Rectangle", style="W.TButton", command=make_rect,
-                                 image=photo_rect, compound="top")
+                                 image=photo_rect, compound="top",  state=['disabled'])
 draw_annotations_button.grid(row=4, column=0)
 photo_undo = PhotoImage(file="icons/undo.png")
-clear_rect_button = Button(button_frame, text="Clear Last Annotation", style="W.TButton", command=clear_rectangle,
-                           image=photo_undo, compound="top")
-clear_rect_button.grid(row=5, column=0)
+clear_last_rect = Button(button_frame, text="Clear Last Annotation", style="W.TButton", command=clear_rectangle,
+                           image=photo_undo, compound="top",  state=['disabled'])
+clear_last_rect.grid(row=5, column=0)
 photo_bin = PhotoImage(file="icons/bin.png")
 clear_rect_button = Button(button_frame, text="Clear All Annotations", style="W.TButton", command=clear_all_rectangles,
-                           image=photo_bin, compound="top")
+                           image=photo_bin, compound="top", state=['disabled'])
 clear_rect_button.grid(row=6, column=0)
 photo_next = PhotoImage(file="icons/next.png")
 next_image = Button(button_frame, text="Next Image", style="W.TButton", command=next_image, image=photo_next,
-                    compound="top")
+                    compound="top", state=['disabled'])
 next_image.grid(row=7, column=0)
 photo_prev = PhotoImage(file="icons/prev.png")
 pre_image = Button(button_frame, text="Prev Image", style="W.TButton", command=prev_image, image=photo_prev,
-                   compound="top")
+                   compound="top", state=['disabled'])
 pre_image.grid(row=8, column=0)
 photo_poly = PhotoImage(file="icons/poly.png")
 create_polygon_button = Button(button_frame, text="Create poly", style="W.TButton", command=create_polygon,
-                               image=photo_poly, compound="top")
+                               image=photo_poly, compound="top",  state=['disabled'])
 create_polygon_button.grid(row=9, column=0)
 photo_cancel = PhotoImage(file="icons/cancel.png")
 close_button = Button(button_frame, text="Close Image", style="W.TButton", command=clear_image, image=photo_cancel,
-                      compound="top")
+                      compound="top", state=['disabled'])
 close_button.grid(row=10, column=0)
 
 # canvas
