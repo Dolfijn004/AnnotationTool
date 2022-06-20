@@ -619,24 +619,33 @@ main_frame = tk.Frame(window).grid(sticky='nsew')
 # Frame for buttons
 button_frame = tk.Frame(main_frame, height=window.winfo_height(), width=window.winfo_width(), borderwidth=10,
                         relief=FLAT)
-button_frame.grid(row=0, column=0, sticky='nsew')
+button_frame.grid(row=0, column=0, sticky='nsew', rowspan=2)
 
 # frame for the canvas
 canvas_frames = tk.Frame(main_frame, height=window.winfo_height(), width=window.winfo_width(), relief=FLAT)
 canvas_frames.grid(row=0, column=1, sticky='nsew')
 
+# frame voor next en previous image buttons
+nepre_frame = tk.Frame(main_frame, height=40, width=window.winfo_width(), relief=FLAT)
+nepre_frame.grid(row=1, column=1, sticky='nsew')
+
 # left frame
 properties_frame = tk.Frame(main_frame, height=window.winfo_height(), width=window.winfo_width(), borderwidth=10,
                             relief=FLAT)
-properties_frame.grid(row=0, column=2, sticky='nsew')
+properties_frame.grid(row=0, column=2, sticky='nsew', rowspan=2)
 
-# grid configuration
+# grid configuration window
 window.grid_columnconfigure(0, weight=1)
 window.grid_columnconfigure(1, weight=100000)
 window.grid_columnconfigure(2, weight=1)
-window.grid_rowconfigure(0, weight=1)
+window.grid_rowconfigure(0, weight=12)
+window.grid_rowconfigure(1, weight=1)
 
-# buttons
+# grid configuration next and previous buttons
+nepre_frame.grid_columnconfigure(0, weight=1)
+nepre_frame.grid_columnconfigure(1, weight=1)
+
+# buttons left
 photo_open = PhotoImage(file="icons/new.png")
 open_button = Button(button_frame, text="Open Image", style="W.TButton", command=get_image_file_path, image=photo_open,
                      compound="top")
@@ -656,6 +665,10 @@ photo_rect = PhotoImage(file="icons/rect.png")
 draw_annotations_button = Button(button_frame, text="Draw Rectangle", style="W.TButton", command=make_rect,
                                  image=photo_rect, compound="top",  state=['disabled'])
 draw_annotations_button.grid(row=4, column=0)
+photo_poly = PhotoImage(file="icons/poly.png")
+create_polygon_button = Button(button_frame, text="Create poly", style="W.TButton", command=create_polygon,
+                               image=photo_poly, compound="top")
+create_polygon_button.grid(row=5, column=0)
 photo_undo = PhotoImage(file="icons/undo.png")
 clear_last_rect = Button(button_frame, text="Clear Last Annotation", style="W.TButton", command=clear_rectangle,
                            image=photo_undo, compound="top",  state=['disabled'])
@@ -664,14 +677,6 @@ photo_bin = PhotoImage(file="icons/bin.png")
 clear_rect_button = Button(button_frame, text="Clear All Annotations", style="W.TButton", command=clear_all_rectangles,
                            image=photo_bin, compound="top", state=['disabled'])
 clear_rect_button.grid(row=6, column=0)
-photo_next = PhotoImage(file="icons/next.png")
-next_image = Button(button_frame, text="Next Image", style="W.TButton", command=next_image, image=photo_next,
-                    compound="top", state=['disabled'])
-next_image.grid(row=7, column=0)
-photo_prev = PhotoImage(file="icons/prev.png")
-pre_image = Button(button_frame, text="Prev Image", style="W.TButton", command=prev_image, image=photo_prev,
-                   compound="top", state=['disabled'])
-pre_image.grid(row=8, column=0)
 photo_poly = PhotoImage(file="icons/poly.png")
 create_polygon_button = Button(button_frame, text="Create poly", style="W.TButton", command=create_polygon,
                                image=photo_poly, compound="top",  state=['disabled'])
@@ -681,11 +686,23 @@ close_button = Button(button_frame, text="Close Image", style="W.TButton", comma
                       compound="top", state=['disabled'])
 close_button.grid(row=10, column=0)
 
+
 # canvas
 image_area = Canvas(canvas_frames, bg='grey')
 image_area.grid(row=0, column=1, sticky='nsew')
 image_area.pack(fill='both', expand=True)
 image_area.bind('<Motion>', motion)
+
+# buttons under the canvas
+photo_next = PhotoImage(file="icons/next.png")
+next_image = Button(nepre_frame, text="Next Image", style="W.TButton", command=next_image, image=photo_next,
+                    compound="right", state=['disabled'])
+next_image.grid(row=0, column=1, sticky='e')
+photo_prev = PhotoImage(file="icons/prev.png")
+pre_image = Button(nepre_frame, text="Prev Image", style="W.TButton", command=prev_image, image=photo_prev,
+                   compound="left", state=['disabled'])
+pre_image.grid(row=0, column=0, sticky='w')
+
 
 # listbox for labels
 label_list = Listbox(properties_frame, width=40, height=20)
