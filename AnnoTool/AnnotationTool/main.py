@@ -662,27 +662,23 @@ save_button.grid(row=2, column=0)
 photo_rect = PhotoImage(file="icons/rect.png")
 draw_annotations_button = Button(button_frame, text="Draw Rectangle", style="W.TButton", command=make_rect,
                                  image=photo_rect, compound="top",  state=['disabled'])
-draw_annotations_button.grid(row=4, column=0)
+draw_annotations_button.grid(row=3, column=0)
 photo_poly = PhotoImage(file="icons/poly.png")
 create_polygon_button = Button(button_frame, text="Create poly", style="W.TButton", command=create_polygon,
-                               image=photo_poly, compound="top")
-create_polygon_button.grid(row=5, column=0)
+                               image=photo_poly, compound="top",  state=['disabled'])
+create_polygon_button.grid(row=4, column=0)
 photo_undo = PhotoImage(file="icons/undo.png")
 clear_last_rect = Button(button_frame, text="Clear Last Annotation", style="W.TButton", command=clear_rectangle,
                            image=photo_undo, compound="top",  state=['disabled'])
-clear_last_rect.grid(row=9, column=0)
+clear_last_rect.grid(row=5, column=0)
 photo_bin = PhotoImage(file="icons/bin.png")
 clear_rect_button = Button(button_frame, text="Clear All Annotations", style="W.TButton", command=clear_all_rectangles,
                            image=photo_bin, compound="top", state=['disabled'])
 clear_rect_button.grid(row=6, column=0)
-photo_poly = PhotoImage(file="icons/poly.png")
-create_polygon_button = Button(button_frame, text="Create poly", style="W.TButton", command=create_polygon,
-                               image=photo_poly, compound="top",  state=['disabled'])
-create_polygon_button.grid(row=5, column=0)
 photo_cancel = PhotoImage(file="icons/cancel.png")
 close_button = Button(button_frame, text="Close Image", style="W.TButton", command=clear_image, image=photo_cancel,
                       compound="top", state=['disabled'])
-close_button.grid(row=10, column=0)
+close_button.grid(row=7, column=0)
 
 
 # canvas
@@ -705,6 +701,7 @@ pre_image.grid(row=0, column=0, sticky='w')
 # listbox for labels
 label_list = Listbox(properties_frame, width=40, height=20)
 label_list.grid(row=2, column=2)
+
 # entry
 entry_button = Button(properties_frame, text="Add label", width=20, command=enter_labels)
 entry_button.grid(row=1, column=2)
