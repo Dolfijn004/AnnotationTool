@@ -19,6 +19,7 @@ image_file_path = ""
 img_open = None
 prod_dir = ""
 image_found = False
+rect_dict = {}
 
 window = tk.Tk()
 window.title("Image Annotation Tool")
@@ -42,6 +43,21 @@ style.configure('W.TButton', font=
 
 # functions
 
+# on pressing select
+def select_press():
+    image_area.bind('<Button-1>', select_pressed)
+
+
+# once a shape is pressed the coordinates are shown in the bottom
+def select_pressed(event):
+    global rect_dict
+    global coords_label
+    id_selected = image_area.find_withtag("current")[0]
+    location_selected = rect_dict.get(id_selected)
+    print(location_selected)
+    coords_label['text'] = 'Coordinates: {}'.format(location_selected)
+
+
 # opens one image when using the open image button
 def get_image_file_path():
     global image_file_path
@@ -57,6 +73,7 @@ def get_image_file_path():
     close_button['state'] = tk.NORMAL
     clear_last_rect['state'] = tk.NORMAL
     save_button['state'] = tk.NORMAL
+    select_button['state'] = tk.NORMAL
 
     test = False
     image_file_path = filedialog.askopenfilename()
@@ -98,6 +115,7 @@ def open_folder():
     clear_last_rect['state'] = tk.NORMAL
     close_button['state'] = tk.NORMAL
     save_button['state'] = tk.NORMAL
+    select_button['state'] = tk.NORMAL
     directory = filedialog.askdirectory()
     os.chdir(directory)  # it permits to change the current dir
     all_images = os.listdir()
@@ -297,9 +315,12 @@ def draw_rect(self):
     global topx, topy, botx, boty
     global rect_id
     global rect_list
+    global rect_dict
     image_area.coords(rect_id, topx, topy, botx, boty)
     image_area.tag_bind(rect_id, '<Button-1>', select_rect)
     rect_list.append(rect_id)
+    rect_dict[rect_id] = (topx, topy, botx, boty)
+    print(rect_dict)
     image_area.unbind('<Button-1>')
     image_area.unbind('<B1-Motion>')
     image_area.unbind('<ButtonRelease-1>')
@@ -407,7 +428,10 @@ def clear_image():
     draw_annotations_button['state'] = tk.DISABLED
     create_polygon_button['state'] = tk.DISABLED
     clear_rect_button['state'] = tk.DISABLED
-    clear_rect_button['state'] = tk.DISABLED
+    clear_last_rect['state'] = tk.DISABLED
+    save_button['state'] = tk.DISABLED
+    clear_last_rect['state'] = tk.DISABLED
+    select_button['state'] = tk.DISABLED
 
 
 #  enter labels into label_list
@@ -669,6 +693,7 @@ window.grid_rowconfigure(1, weight=1)
 # grid configuration next and previous buttons
 nepre_frame.grid_columnconfigure(0, weight=1)
 nepre_frame.grid_columnconfigure(1, weight=1)
+nepre_frame.grid_columnconfigure(2, weight=1)
 
 # buttons left
 photo_open = PhotoImage(file="icons/new.png")
@@ -686,30 +711,30 @@ save_button.grid(row=2, column=0)
 # photosaveas = PhotoImage(file="icons/save-as.png")
 # saveAsButton = Button(button_frame, text="Save As", style="W.TButton", image=photosaveas, compound="top")
 # saveAsButton.grid(row=3, column=0)
+photo_select = PhotoImage(file="icons/objects.png")
+select_button = Button(button_frame, text="Select", style="W.TButton", command=select_press, image=photo_select,
+                       compound="top", state=['disabled'])
+select_button.grid(row=3, column=0)
 photo_rect = PhotoImage(file="icons/rect.png")
 draw_annotations_button = Button(button_frame, text="Draw Rectangle", style="W.TButton", command=make_rect,
                                  image=photo_rect, compound="top", state=['disabled'])
 draw_annotations_button.grid(row=4, column=0)
 photo_poly = PhotoImage(file="icons/poly.png")
 create_polygon_button = Button(button_frame, text="Create poly", style="W.TButton", command=create_polygon,
-                               image=photo_poly, compound="top")
+                               image=photo_poly, compound="top",  state=['disabled'])
 create_polygon_button.grid(row=5, column=0)
 photo_undo = PhotoImage(file="icons/undo.png")
 clear_last_rect = Button(button_frame, text="Clear Last Annotation", style="W.TButton", command=clear_rectangle,
-                         image=photo_undo, compound="top", state=['disabled'])
-clear_last_rect.grid(row=9, column=0)
+                           image=photo_undo, compound="top",  state=['disabled'])
+clear_last_rect.grid(row=6, column=0)
 photo_bin = PhotoImage(file="icons/bin.png")
 clear_rect_button = Button(button_frame, text="Clear All Annotations", style="W.TButton", command=clear_all_rectangles,
                            image=photo_bin, compound="top", state=['disabled'])
-clear_rect_button.grid(row=6, column=0)
-photo_poly = PhotoImage(file="icons/poly.png")
-create_polygon_button = Button(button_frame, text="Create poly", style="W.TButton", command=create_polygon,
-                               image=photo_poly, compound="top", state=['disabled'])
-create_polygon_button.grid(row=5, column=0)
+clear_rect_button.grid(row=7, column=0)
 photo_cancel = PhotoImage(file="icons/cancel.png")
 close_button = Button(button_frame, text="Close Image", style="W.TButton", command=clear_image, image=photo_cancel,
                       compound="top", state=['disabled'])
-close_button.grid(row=10, column=0)
+close_button.grid(row=8, column=0)
 
 # canvas
 image_area = Canvas(canvas_frames, bg='grey')
@@ -721,15 +746,20 @@ image_area.bind('<Motion>', motion)
 photo_next = PhotoImage(file="icons/next.png")
 next_image = Button(nepre_frame, text="Next Image", style="W.TButton", command=next_image, image=photo_next,
                     compound="right", state=['disabled'])
-next_image.grid(row=0, column=1, sticky='e')
+next_image.grid(row=0, column=2, sticky='e')
 photo_prev = PhotoImage(file="icons/prev.png")
 pre_image = Button(nepre_frame, text="Prev Image", style="W.TButton", command=prev_image, image=photo_prev,
                    compound="left", state=['disabled'])
 pre_image.grid(row=0, column=0, sticky='w')
 
+# Coordinates under canvas
+coords_label = Label(nepre_frame, text="Select Shape for Coordinates", font=('calibri', 10, 'bold'))
+coords_label.grid(row=0, column=1)
+
 # listbox for labels
 label_list = Listbox(properties_frame, width=40, height=20)
 label_list.grid(row=2, column=2)
+
 # entry
 entry_button = Button(properties_frame, text="Add label", width=20, command=enter_labels)
 entry_button.grid(row=1, column=2)
