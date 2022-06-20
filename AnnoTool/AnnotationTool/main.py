@@ -407,7 +407,8 @@ def clear_image():
     draw_annotations_button['state'] = tk.DISABLED
     create_polygon_button['state'] = tk.DISABLED
     clear_rect_button['state'] = tk.DISABLED
-    clear_rect_button['state'] = tk.DISABLED
+    clear_last_rect['state'] = tk.DISABLED
+    save_button['state'] = tk.DISABLED
 
 
 
