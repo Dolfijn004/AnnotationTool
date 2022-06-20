@@ -41,6 +41,8 @@ style.configure('W.TButton', font=
 
 
 # functions
+
+# opens one image when using the open image button
 def get_image_file_path():
     global image_file_path
     global image_found
@@ -70,6 +72,7 @@ def get_image_file_path():
         window.mainloop()
 
 
+# opens a folder and displays it in the folder view
 def open_folder():
     global image
     global pic
@@ -114,6 +117,7 @@ def open_folder():
         window.mainloop()
 
 
+# goes to the next image in the folder view via the next image button
 def next_image():
     global image
     global pic
@@ -153,6 +157,7 @@ def next_image():
         tkinter.messagebox.showwarning("Warning", "Please press the Previous button")
 
 
+# goes to the previous image in the folder view via the previous image button
 def prev_image():
     global image
     global pic
@@ -191,6 +196,7 @@ def prev_image():
         tkinter.messagebox.showwarning("Warning", "Please press the Next button")
 
 
+#  shows the image which has been clicked on from the folder view
 def show_image(event):
     global image
     global pic
@@ -230,13 +236,16 @@ window.bind("<<ListboxSelect>>", show_image)
 
 
 def resize_image(width, height):
+    #  Determines what the dimensions of the image should be to keep the same ratio.
+    #
+    #  Based on if the image has a smaller or larger ration than the canvas the image will be resized through a formula.
     canvas_width = image_area.winfo_width()
-    canvas_height = image_area.winfo_height()  # canvas width and height variables minus the border
-    if width / height > canvas_width / canvas_height:  # checking if dimensions are bigger then the canvas' dimensions
+    canvas_height = image_area.winfo_height()  # canvas width and height variables
+    if width / height > canvas_width / canvas_height:  # checking if ratio are bigger then the canvas' ratio
         height = round(height * canvas_width / width)
         width = canvas_width
         return width, height
-    elif width / height < canvas_width / canvas_height:  # checking if dimensions are smaller than the canvas' dimensions
+    elif width / height < canvas_width / canvas_height:  # checking if ratio are smaller than the canvas' ratio
         width = round(width * canvas_height / height)
         height = canvas_height
         return width, height
@@ -246,6 +255,7 @@ def resize_image(width, height):
         return width, height
 
 
+# initializes the rectangle
 def get_mouse_posn(event):
     global rect_id
     global topx, topy
@@ -255,6 +265,7 @@ def get_mouse_posn(event):
                                           stipple="gray12")
 
 
+# updates the rectangle based on where the cursor is moving
 def update_sel_rect(event):
     global rect_id
     global topx, topy, botx, boty
@@ -265,7 +276,7 @@ def update_sel_rect(event):
     image_area.coords(rect_id, topx, topy, curx, cury)
 
 
-# 
+# finishes the rectangle, binds event to the rectangle and unbinds all key events
 def draw_rect(self):
     global topx, topy, botx, boty
     global rect_id
@@ -306,7 +317,7 @@ def create_oval(event):
         image_area.tag_bind(oval, '<Leave>', leave_poly)  # binds events to each oval
         polygon_point_coord.append((xcoord, ycoord))  # saves coords of oval
     else:  # connecting the ovals when there has been clicked near the first oval
-        image_area.create_polygon(polygon_point_coord)
+        image_area.create_polygon(polygon_point_coord, outline="blue", stipple="gray12")
         image_area.unbind('<Button-1>')
 
 
