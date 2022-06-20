@@ -1,17 +1,11 @@
-import os
 import tkinter
 import tkinter.messagebox
 from tkinter import *
 from tkinter.ttk import *
-import cv2 as cv
-import numpy as np
-from PIL.features import codecs
 import os
 import tkinter as tk
 import tkinter.filedialog as filedialog
-from PIL import Image, ImageTk, ImageGrab
-from pynput import keyboard
-from pynput.keyboard import Listener
+from PIL import Image, ImageTk
 import json
 
 WIDTH, HEIGHT = 1200, 800
@@ -21,10 +15,10 @@ rect_id = None
 polygon_point_coord = list()
 rect_list = list()
 rect_main_data = list()
-ImageFilePath = ""
-ImgOpen = None
-prodDir = ""
-ImageFound = False
+image_file_path = ""
+img_open = None
+prod_dir = ""
+image_found = False
 
 window = tk.Tk()
 window.title("Image Annotation Tool")
@@ -47,22 +41,22 @@ style.configure('W.TButton', font=
 
 
 # functions
-def GetImageFilePath():
-    global ImageFilePath
-    global ImageFound
+def get_image_file_path():
+    global image_file_path
+    global image_found
     global img
     global canvas
-    global ImageFrame
+    global image_frame
     global image_area
     test = False
-    ImageFilePath = filedialog.askopenfilename()
-    ImgOpen = Image.open(ImageFilePath)
-    if len(ImageFilePath) > 0:
+    image_file_path = filedialog.askopenfilename()
+    img_open = Image.open(image_file_path)
+    if len(image_file_path) > 0:
         test = True
-        resized_width, resized_height = resize_image(ImgOpen.width, ImgOpen.height)
-        ImgOpen = ImgOpen.resize((resized_width, resized_height), Image.ANTIALIAS)
-        img = ImageTk.PhotoImage(ImgOpen)
-        ImageFound = True
+        resized_width, resized_height = resize_image(img_open.width, img_open.height)
+        img_open = img_open.resize((resized_width, resized_height), Image.ANTIALIAS)
+        img = ImageTk.PhotoImage(img_open)
+        image_found = True
         if resized_width < image_area.winfo_width():  # check if image is less wide than the canvas
             centering_width = (image_area.winfo_width() - resized_width) / 2
             image_area.create_image(centering_width, 0, image=img, anchor=NW)
@@ -76,38 +70,38 @@ def GetImageFilePath():
         window.mainloop()
 
 
-def openFolder():
+def open_folder():
     global image
     global pic
     global images
-    global picOpen
-    global ImageFound
+    global pic_open
+    global image_found
     global img
     global image_area
-    global allImages
+    global all_images
     directory = filedialog.askdirectory()
     os.chdir(directory)  # it permits to change the current dir
-    allImages = os.listdir()
-    allImages.reverse()
-    for image in allImages:  # it returns the list of files
+    all_images = os.listdir()
+    all_images.reverse()
+    for image in all_images:  # it returns the list of files
         pos = 0
         if image.endswith(('png', 'jpg', 'jpeg', 'ico')):
-            folderList.insert(pos, image)
+            folder_list.insert(pos, image)
             pos += 1
-    folderList.selection_set(0)
-    folderList.see(0)
-    folderList.activate(0)
-    folderList.selection_anchor(0)
-    image = folderList.curselection()
-    images = folderList.get(image[0])
+    folder_list.selection_set(0)
+    folder_list.see(0)
+    folder_list.activate(0)
+    folder_list.selection_anchor(0)
+    image = folder_list.curselection()
+    images = folder_list.get(image[0])
     img1 = Image.open(images)
     pic = ImageTk.PhotoImage(img1, )
-    ImageFound = True
+    image_found = True
     if len(images) > 0:
         test = True
         resized_width, resized_height = resize_image(img1.width, img1.height)
-        picOpen = img1.resize((resized_width, resized_height), Image.ANTIALIAS)
-        img = ImageTk.PhotoImage(picOpen)
+        pic_open = img1.resize((resized_width, resized_height), Image.ANTIALIAS)
+        img = ImageTk.PhotoImage(pic_open)
         if resized_width < image_area.winfo_width():  # check if image is less wide than the canvas
             centering_width = (image_area.winfo_width() - resized_width) / 2
             image_area.create_image(centering_width, 0, image=img, anchor=NW)
@@ -120,29 +114,29 @@ def openFolder():
         window.mainloop()
 
 
-def nextImage():
+def next_image():
     global image
     global pic
     global images
-    global ImageFound
+    global image_found
     global img
     global image_area
-    global allImages
+    global all_images
     try:
-        next_one = folderList.curselection()
+        next_one = folder_list.curselection()
         next_one = next_one[0] + 1
-        folderList.selection_clear(0, 'end')
-        folderList.selection_set(next_one)
-        folderList.activate(next_one)
-        folderList.selection_anchor(next_one)
-        image = folderList.curselection()
-        images = folderList.get(image)
-        ImgOpen = Image.open(images)
-        ImageFound = True
+        folder_list.selection_clear(0, 'end')
+        folder_list.selection_set(next_one)
+        folder_list.activate(next_one)
+        folder_list.selection_anchor(next_one)
+        image = folder_list.curselection()
+        images = folder_list.get(image)
+        img_open = Image.open(images)
+        image_found = True
         if len(images) > 0:
             test = True
-            resized_width, resized_height = resize_image(ImgOpen.width, ImgOpen.height)
-            img1 = ImgOpen.resize((resized_width, resized_height), Image.ANTIALIAS)
+            resized_width, resized_height = resize_image(img_open.width, img_open.height)
+            img1 = img_open.resize((resized_width, resized_height), Image.ANTIALIAS)
             img = ImageTk.PhotoImage(img1)
             if resized_width < image_area.winfo_width():  # check if image is less wide than the canvas
                 centering_width = (image_area.winfo_width() - resized_width) / 2
@@ -159,29 +153,29 @@ def nextImage():
         tkinter.messagebox.showwarning("Warning", "Please press the Previous button")
 
 
-def prevImage():
+def prev_image():
     global image
     global pic
     global images
-    global ImageFound
+    global image_found
     global img
     global image_area
-    global allImages
+    global all_images
     try:
-        prev_one = folderList.curselection()
+        prev_one = folder_list.curselection()
         prev_one = prev_one[0] - 1
-        folderList.selection_clear(0, 'end')
-        folderList.selection_set(prev_one)
-        folderList.activate(prev_one)
-        folderList.selection_anchor(prev_one)
-        image = folderList.curselection()
-        images = folderList.get(image)
-        ImgOpen = Image.open(images)
-        ImageFound = True
+        folder_list.selection_clear(0, 'end')
+        folder_list.selection_set(prev_one)
+        folder_list.activate(prev_one)
+        folder_list.selection_anchor(prev_one)
+        image = folder_list.curselection()
+        images = folder_list.get(image)
+        img_open = Image.open(images)
+        image_found = True
         if len(images) > 0:
             test = True
-            resized_width, resized_height = resize_image(ImgOpen.width, ImgOpen.height)
-            img1 = ImgOpen.resize((resized_width, resized_height), Image.ANTIALIAS)
+            resized_width, resized_height = resize_image(img_open.width, img_open.height)
+            img1 = img_open.resize((resized_width, resized_height), Image.ANTIALIAS)
             img = ImageTk.PhotoImage(img1)
             if resized_width < image_area.winfo_width():  # check if image is less wide than the canvas
                 centering_width = (image_area.winfo_width() - resized_width) / 2
@@ -197,28 +191,28 @@ def prevImage():
         tkinter.messagebox.showwarning("Warning", "Please press the Next button")
 
 
-def showimage(event):
+def show_image(event):
     global image
     global pic
     global images
-    global picOpen
-    global ImageFound
+    global pic_open
+    global image_found
     global img
     global image_area
-    global allImages
-    n = folderList.curselection()
-    folderList.selection_set(n)
-    folderList.see(n)
-    folderList.activate(n)
-    folderList.selection_anchor(n)
-    image = folderList.curselection()
-    images = folderList.get(image)
-    ImgOpen = Image.open(images)
-    ImageFound = True
+    global all_images
+    n = folder_list.curselection()
+    folder_list.selection_set(n)
+    folder_list.see(n)
+    folder_list.activate(n)
+    folder_list.selection_anchor(n)
+    image = folder_list.curselection()
+    images = folder_list.get(image)
+    img_open = Image.open(images)
+    image_found = True
     if len(images) > 0:
         test = True
-        resized_width, resized_height = resize_image(ImgOpen.width, ImgOpen.height)
-        img1 = ImgOpen.resize((resized_width, resized_height), Image.ANTIALIAS)
+        resized_width, resized_height = resize_image(img_open.width, img_open.height)
+        img1 = img_open.resize((resized_width, resized_height), Image.ANTIALIAS)
         img = ImageTk.PhotoImage(img1)
         if resized_width < image_area.winfo_width():  # check if image is less wide than the canvas
             centering_width = (image_area.winfo_width() - resized_width) / 2
@@ -232,7 +226,7 @@ def showimage(event):
         window.mainloop()
 
 
-window.bind("<<ListboxSelect>>", showimage)
+window.bind("<<ListboxSelect>>", show_image)
 
 
 def resize_image(width, height):
@@ -250,7 +244,6 @@ def resize_image(width, height):
         width = canvas_width
         height = canvas_height
         return width, height
-
 
 
 def get_mouse_posn(event):
@@ -272,6 +265,7 @@ def update_sel_rect(event):
     image_area.coords(rect_id, topx, topy, curx, cury)
 
 
+# 
 def draw_rect(self):
     global topx, topy, botx, boty
     global rect_id
@@ -290,65 +284,72 @@ def select_rect(event):
     print(ids)
 
 
+# bind button-1 to create ovals and a polygon
 def create_polygon():
     image_area.bind('<Button-1>', create_oval)
 
 
+# creating ovals and connecting them when the first oval is clicked again
 def create_oval(event):
     try:
-        first_oval_coordx, first_oval_coordy = polygon_point_coord[0]
+        first_oval_coordx, first_oval_coordy = polygon_point_coord[0]  # get the coords of the first oval
     except:
-        first_oval_coordx, first_oval_coordy = -100, -100
+        first_oval_coordx, first_oval_coordy = -100, -100  # dummy value if it is the first oval being placed
 
     if (currentx > first_oval_coordx + 10 or currentx < first_oval_coordx - 10) or (
-            currenty < first_oval_coordy - 10 or currenty > first_oval_coordy + 10):
+            currenty < first_oval_coordy - 10 or currenty > first_oval_coordy + 10):  # check if the cursor is
+        # anywhere near the first oval
         xcoord, ycoord = image_area.canvasx(event.x), image_area.canvasy(event.y)
         oval = image_area.create_oval((xcoord - 7, ycoord + 7, xcoord + 7, ycoord - 7), fill="blue",
                                       outline="blue")  # finds coords of cursor and makes oval
         image_area.tag_bind(oval, '<Enter>', enter_poly)
         image_area.tag_bind(oval, '<Leave>', leave_poly)  # binds events to each oval
-        polygon_point_coord.append((xcoord, ycoord))  # saves coords of ovals, idk if needed
-    else:
+        polygon_point_coord.append((xcoord, ycoord))  # saves coords of oval
+    else:  # connecting the ovals when there has been clicked near the first oval
         image_area.create_polygon(polygon_point_coord)
         image_area.unbind('<Button-1>')
 
 
+# highlight the oval if it is the first oval placed
 def enter_poly(event):
     oval = image_area.find_closest(event.x, event.y)[0]
     if oval == 1:
         image_area.itemconfig(oval, fill="green", outline="green")
 
 
+# undo the effect of enter_poly
 def leave_poly(event):
     oval = image_area.find_closest(event.x, event.y)[0]
     if oval == 1:
         image_area.itemconfig(oval, fill="blue", outline="blue")
 
 
-def cropImages():
+# bind all the buttons for making rectangles
+def make_rect():
     image_area.bind('<Button-1>', get_mouse_posn)
     image_area.bind('<B1-Motion>', update_sel_rect)
     image_area.bind('<ButtonRelease-1>', draw_rect)
 
 
-def saveAnnotations():
-    im = Image.open(ImageFilePath)
-    mainDir = os.path.dirname(ImageFilePath)
-    global prodDir
-    prodDir = os.path.splitext(ImageFilePath)[0]
-    if not os.path.exists(prodDir):
-        os.makedirs(prodDir)
+# save the image in jpg
+def save_annotations():
+    im = Image.open(image_file_path)
+    main_dir = os.path.dirname(image_file_path)
+    global prod_dir
+    prod_dir = os.path.splitext(image_file_path)[0]
+    if not os.path.exists(prod_dir):
+        os.makedirs(prod_dir)
     i = 0
     for po in rect_list:
         i = i + 1
         img1 = im.crop((po[0], po[1], po[2], po[3]))
-        print(os.path.join(prodDir, "img" + str(i) + ".jpg"))
-        img1.save(os.path.join(prodDir, "img" + str(i) + ".jpg"))
+        print(os.path.join(prod_dir, "img" + str(i) + ".jpg"))
+        img1.save(os.path.join(prod_dir, "img" + str(i) + ".jpg"))
     tk.messagebox.showinfo("Completed ", "Annotations has been saved successfully")
-    # beetje research gedaan, lambda handler zou dit in coco mogelijk kunnen maken
 
 
-def clearRectangles():
+# undo rectangles
+def clear_rectangle():
     global rect_main_data
     global rect_list
     global rect_id
@@ -358,7 +359,8 @@ def clearRectangles():
     window.mainloop()
 
 
-def clearAllRectangles():
+# clear all the rectangles at once
+def clear_all_rectangles():
     global rect_main_data
     global rect_list
     global rect_id
@@ -369,18 +371,28 @@ def clearAllRectangles():
     image_area.pack()
     window.mainloop()
 
+
+# delete the image and it's annotations at once
 def clear_image():
     image_area.delete("all")
 
 
-def enterLabels():
-    if len(labelEntry.get()) == 0:
+#  enter labels into label_list
+def enter_labels():
+    if len(label_entry.get()) == 0:  # check if entry field is empty
         tkinter.messagebox.showwarning("Warning", "The input field is empty.")
     else:
-        enteredlabel = labelEntry.get()
-        labelList.insert(0, enteredlabel)
+        entered_label = label_entry.get()
+        label_list.insert(0, entered_label)
 
-# hier wordt door mij aan gewerkt
+
+#  tracks the mouse all the time
+def motion(event):
+    global currentx, currenty
+    currentx, currenty = image_area.canvasx(event.x), image_area.canvasy(event.y)
+
+
+#  tutorial
 def click_tutorial():
     global popup
     popup = Toplevel(window)
@@ -389,13 +401,12 @@ def click_tutorial():
     scrollbar = Scrollbar(popup, orient=VERTICAL)
     scrollbar.pack(side=RIGHT, fill=Y)
 
-
     introduction_label = Label(popup,
                                padding=[10, 20, 10, 20],
                                font="Bold", text="Greetings and thank you for using our annotation tool."
-                               "\nin this window we will go over the functionality of the application itself "
-                               "\nand the ways you're able to interact with it."
-                               "\nlet's start with the left side buttons from top to bottom: ")
+                                                 "\nin this window we will go over the functionality of the application itself "
+                                                 "\nand the ways you're able to interact with it."
+                                                 "\nlet's start with the left side buttons from top to bottom: ")
 
     open_labels = Label(popup,
                         text="the first button you see is called open, with this button you wil be able to place a singular image inside the gray middle area of your screen."
@@ -510,50 +521,44 @@ def click_tutorial():
     help_label.pack(anchor="w")
 
 
-# tot en met hier
-
-def motion(event):
-    global currentx, currenty
-    currentx, currenty = image_area.canvasx(event.x), image_area.canvasy(event.y)
-
-
+#  all keybinds
 def on_press_save():
-    saveAnnotations()
+    save_annotations()
 
 
 window.bind("<Control-s>", lambda x: on_press_save())
 
 
 def on_press_open():
-    GetImageFilePath()
+    get_image_file_path()
 
 
 window.bind("<Control-o>", lambda x: on_press_open())
 
 
 def on_press_Clear():
-    clearRectangles()
+    clear_rectangle()
 
 
 window.bind("<Control-z>", lambda x: on_press_Clear())
 
 
 def on_press_folder():
-    openFolder()
+    open_folder()
 
 
 window.bind("<Control-f>", lambda x: on_press_folder())
 
 
 def left():
-    prevImage()
+    prev_image()
 
 
 window.bind("<Left>", lambda x: left())
 
 
 def right():
-    nextImage()
+    next_image()
 
 
 window.bind("<Right>", lambda x: right())
@@ -572,21 +577,22 @@ def on_zoomout_press():
 
 window.bind("<Down>", lambda x: on_zoomout_press())
 
-# MainFrame voor rest de andere frames
-mainFrame = tk.Frame(window).grid(sticky='nsew')
+# main_frame for the other frames
+main_frame = tk.Frame(window).grid(sticky='nsew')
 
 # Frame for buttons
-buttonFrame = tk.Frame(mainFrame, height=window.winfo_height(), width=window.winfo_width(), borderwidth=10, relief=FLAT)
-buttonFrame.grid(row=0, column=0, sticky='nsew')
+button_frame = tk.Frame(main_frame, height=window.winfo_height(), width=window.winfo_width(), borderwidth=10,
+                        relief=FLAT)
+button_frame.grid(row=0, column=0, sticky='nsew')
 
 # frame for the canvas
-canvasFrame = tk.Frame(mainFrame, height=window.winfo_height(), width=window.winfo_width(), relief=FLAT)
-canvasFrame.grid(row=0, column=1, sticky='nsew')
+canvas_frames = tk.Frame(main_frame, height=window.winfo_height(), width=window.winfo_width(), relief=FLAT)
+canvas_frames.grid(row=0, column=1, sticky='nsew')
 
 # left frame
-propertiesFrame = tk.Frame(mainFrame, height=window.winfo_height(), width=window.winfo_width(), borderwidth=10,
-                           relief=FLAT)
-propertiesFrame.grid(row=0, column=2, sticky='nsew')
+properties_frame = tk.Frame(main_frame, height=window.winfo_height(), width=window.winfo_width(), borderwidth=10,
+                            relief=FLAT)
+properties_frame.grid(row=0, column=2, sticky='nsew')
 
 # grid configuration
 window.grid_columnconfigure(0, weight=1)
@@ -595,101 +601,103 @@ window.grid_columnconfigure(2, weight=1)
 window.grid_rowconfigure(0, weight=1)
 
 # buttons
-photoopen = PhotoImage(file="icons/new.png")
-openButton = Button(buttonFrame, text="Open Image", style="W.TButton", command=GetImageFilePath, image=photoopen, compound="top")
-openButton.grid(row=0, column=0)
-photofile = PhotoImage(file="icons/file.png")
-openFolderButton = Button(buttonFrame, text="Open Folder", style="W.TButton", command=openFolder, image=photofile, compound="top")
-openFolderButton.grid(row=1, column=0)
-photosave = PhotoImage(file="icons/save.png")
-saveButton = Button(buttonFrame, text="Save", style="W.TButton", command=saveAnnotations, image=photosave, compound="top")
-saveButton.grid(row=2, column=0)
-#photosaveas = PhotoImage(file="icons/save-as.png")
-#saveAsButton = Button(buttonFrame, text="Save As", style="W.TButton", image=photosaveas, compound="top")
-#saveAsButton.grid(row=3, column=0)
-photorect = PhotoImage(file="icons/rect.png")
-drawAnnotationBtn = Button(buttonFrame, text="Draw Rectangle", style="W.TButton", command=cropImages, image=photorect, compound="top")
-drawAnnotationBtn.grid(row=4, column=0)
-photoundo = PhotoImage(file="icons/undo.png")
-clearRecButton = Button(buttonFrame, text="Clear Last Annotation", style="W.TButton", command=clearRectangles, image=photoundo, compound="top")
-clearRecButton.grid(row=5, column=0)
-photobin = PhotoImage(file="icons/bin.png")
-clearRecButton = Button(buttonFrame, text="Clear All Annotations", style="W.TButton", command=clearAllRectangles, image=photobin, compound="top")
-clearRecButton.grid(row=6, column=0)
-#zoomInButton = Button(buttonFrame, text="Zoom In", style="W.TButton")
-#zoomInButton.grid(row=7, column=0)
-#zoomOutButton = Button(buttonFrame, text="Zoom Out", style="W.TButton")
-#zoomOutButton.grid(row=8, column=0)
-photonext = PhotoImage(file="icons/next.png")
-nextImage = Button(buttonFrame, text="Next Image", style="W.TButton", command=nextImage, image=photonext, compound="top")
-nextImage.grid(row=9, column=0)
-photoprev = PhotoImage(file="icons/prev.png")
-preImage = Button(buttonFrame, text="Prev Image", style="W.TButton", command=prevImage, image=photoprev, compound="top")
-preImage.grid(row=10, column=0)
-photopoly = PhotoImage(file="icons/poly.png")
-createPolygonBtn = Button(buttonFrame, text="Create poly", style="W.TButton", command=create_polygon, image=photopoly, compound="top")
-createPolygonBtn.grid(row=11, column=0)
-photocancel = PhotoImage(file="icons/cancel.png")
-closeBtn = Button(buttonFrame, text="Close Image", style="W.TButton", command=clear_image, image=photocancel, compound="top")
-closeBtn.grid(row=12, column=0)
+photo_open = PhotoImage(file="icons/new.png")
+open_button = Button(button_frame, text="Open Image", style="W.TButton", command=get_image_file_path, image=photo_open,
+                     compound="top")
+open_button.grid(row=0, column=0)
+photo_file = PhotoImage(file="icons/file.png")
+open_folder_button = Button(button_frame, text="Open Folder", style="W.TButton", command=open_folder, image=photo_file,
+                            compound="top")
+open_folder_button.grid(row=1, column=0)
+photo_save = PhotoImage(file="icons/save.png")
+save_button = Button(button_frame, text="Save", style="W.TButton", command=save_annotations, image=photo_save,
+                     compound="top")
+save_button.grid(row=2, column=0)
+# photosaveas = PhotoImage(file="icons/save-as.png")
+# saveAsButton = Button(button_frame, text="Save As", style="W.TButton", image=photosaveas, compound="top")
+# saveAsButton.grid(row=3, column=0)
+photo_rect = PhotoImage(file="icons/rect.png")
+draw_annotations_button = Button(button_frame, text="Draw Rectangle", style="W.TButton", command=make_rect,
+                                 image=photo_rect, compound="top")
+draw_annotations_button.grid(row=4, column=0)
+photo_undo = PhotoImage(file="icons/undo.png")
+clear_rect_button = Button(button_frame, text="Clear Last Annotation", style="W.TButton", command=clear_rectangle,
+                           image=photo_undo, compound="top")
+clear_rect_button.grid(row=5, column=0)
+photo_bin = PhotoImage(file="icons/bin.png")
+clear_rect_button = Button(button_frame, text="Clear All Annotations", style="W.TButton", command=clear_all_rectangles,
+                           image=photo_bin, compound="top")
+clear_rect_button.grid(row=6, column=0)
+photo_next = PhotoImage(file="icons/next.png")
+next_image = Button(button_frame, text="Next Image", style="W.TButton", command=next_image, image=photo_next,
+                    compound="top")
+next_image.grid(row=7, column=0)
+photo_prev = PhotoImage(file="icons/prev.png")
+pre_image = Button(button_frame, text="Prev Image", style="W.TButton", command=prev_image, image=photo_prev,
+                   compound="top")
+pre_image.grid(row=8, column=0)
+photo_poly = PhotoImage(file="icons/poly.png")
+create_polygon_button = Button(button_frame, text="Create poly", style="W.TButton", command=create_polygon,
+                               image=photo_poly, compound="top")
+create_polygon_button.grid(row=9, column=0)
+photo_cancel = PhotoImage(file="icons/cancel.png")
+close_button = Button(button_frame, text="Close Image", style="W.TButton", command=clear_image, image=photo_cancel,
+                      compound="top")
+close_button.grid(row=10, column=0)
 
 # canvas
-image_area = Canvas(canvasFrame, bg='grey')
+image_area = Canvas(canvas_frames, bg='grey')
 image_area.grid(row=0, column=1, sticky='nsew')
 image_area.pack(fill='both', expand=True)
 image_area.bind('<Motion>', motion)
 
 # listbox for labels
-labelList = Listbox(propertiesFrame, width=40, height=20)
-labelList.grid(row=2, column=2)
+label_list = Listbox(properties_frame, width=40, height=20)
+label_list.grid(row=2, column=2)
 # entry
-entryButton = Button(propertiesFrame, text="Add label", width=20, command=enterLabels)
-entryButton.grid(row=1, column=2)
-
-
-
+entry_button = Button(properties_frame, text="Add label", width=20, command=enter_labels)
+entry_button.grid(row=1, column=2)
 
 # label
-labelEntry = Entry(propertiesFrame, width=30)
-labelEntry.grid(row=0, column=2)
+label_entry = Entry(properties_frame, width=30)
+label_entry.grid(row=0, column=2)
 # -------
 # label for folder list
-label2 = Label(propertiesFrame, text="Images in the folder")
+label2 = Label(properties_frame, text="Images in the folder")
 label2.grid(row=3, column=2)
 # listbox for images in folder
-folderList = Listbox(propertiesFrame, width=40, height=40)
-folderList.grid(row=4, column=2)
-
+folder_list = Listbox(properties_frame, width=40, height=40)
+folder_list.grid(row=4, column=2)
 
 # menubar
 menubar = Menu(window)
 filemenu = Menu(menubar, tearoff=0)
-filemenu.add_command(label="New", command=GetImageFilePath)
-filemenu.add_command(label="Open Folder", command=openFolder)
+filemenu.add_command(label="New", command=get_image_file_path)
+filemenu.add_command(label="Open Folder", command=open_folder)
 filemenu.add_command(label="Save Annotation")
 filemenu.add_separator()
-filemenu.add_command(label="Close Image",)
+filemenu.add_command(label="Close Image", )
 filemenu.add_separator()
 filemenu.add_command(label="Exit", command=window.quit)
 menubar.add_cascade(label="File", menu=filemenu)
 
-editMenu = Menu(menubar, tearoff=0)
-editMenu.add_command(label="Select Area", command=draw_rect)
-editMenu.add_command(label="show Area")
-editMenu.add_command(label="Delete Area", command= clearRectangles)
-menubar.add_cascade(label="Edit", menu=editMenu)
+edit_menu = Menu(menubar, tearoff=0)
+edit_menu.add_command(label="Select Area", command=draw_rect)
+edit_menu.add_command(label="show Area")
+edit_menu.add_command(label="Delete Area", command=clear_rectangle)
+menubar.add_cascade(label="Edit", menu=edit_menu)
 
-viewMenu = Menu(menubar, tearoff=0)
-viewMenu.add_command(label="Zoom In")
-viewMenu.add_command(label="Zoom Out")
-viewMenu.add_separator()
-viewMenu.add_command(label="Show Labels")
-menubar.add_cascade(label="View", menu=viewMenu)
+view_menu = Menu(menubar, tearoff=0)
+view_menu.add_command(label="Zoom In")
+view_menu.add_command(label="Zoom Out")
+view_menu.add_separator()
+view_menu.add_command(label="Show Labels")
+menubar.add_cascade(label="View", menu=view_menu)
 
-helpmenu = Menu(menubar, tearoff=0)
-helpmenu.add_command(label="Tutorial", command=click_tutorial)
-helpmenu.add_command(label="About...")
-menubar.add_cascade(label="Help", menu=helpmenu)
+help_menu = Menu(menubar, tearoff=0)
+help_menu.add_command(label="Tutorial", command=click_tutorial)
+help_menu.add_command(label="About...")
+menubar.add_cascade(label="Help", menu=help_menu)
 window.config(menu=menubar)
 
 window.mainloop()
