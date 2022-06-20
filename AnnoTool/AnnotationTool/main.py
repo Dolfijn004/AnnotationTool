@@ -50,8 +50,6 @@ def get_image_file_path():
     global canvas
     global image_frame
     global image_area
-    pre_image['state'] = tk.NORMAL
-    next_image['state'] = tk.NORMAL
     draw_annotations_button['state'] = tk.NORMAL
     create_polygon_button['state'] = tk.NORMAL
     clear_rect_button['state'] = tk.NORMAL
@@ -672,7 +670,7 @@ create_polygon_button.grid(row=5, column=0)
 photo_undo = PhotoImage(file="icons/undo.png")
 clear_last_rect = Button(button_frame, text="Clear Last Annotation", style="W.TButton", command=clear_rectangle,
                            image=photo_undo, compound="top",  state=['disabled'])
-clear_last_rect.grid(row=5, column=0)
+clear_last_rect.grid(row=9, column=0)
 photo_bin = PhotoImage(file="icons/bin.png")
 clear_rect_button = Button(button_frame, text="Clear All Annotations", style="W.TButton", command=clear_all_rectangles,
                            image=photo_bin, compound="top", state=['disabled'])
@@ -680,7 +678,7 @@ clear_rect_button.grid(row=6, column=0)
 photo_poly = PhotoImage(file="icons/poly.png")
 create_polygon_button = Button(button_frame, text="Create poly", style="W.TButton", command=create_polygon,
                                image=photo_poly, compound="top",  state=['disabled'])
-create_polygon_button.grid(row=9, column=0)
+create_polygon_button.grid(row=5, column=0)
 photo_cancel = PhotoImage(file="icons/cancel.png")
 close_button = Button(button_frame, text="Close Image", style="W.TButton", command=clear_image, image=photo_cancel,
                       compound="top", state=['disabled'])
@@ -719,7 +717,7 @@ label_entry.grid(row=0, column=2)
 label2 = Label(properties_frame, text="Images in the folder")
 label2.grid(row=3, column=2)
 # listbox for images in folder
-folder_list = Listbox(properties_frame, width=40, height=40)
+folder_list = Listbox(properties_frame, width=40, height=30)
 folder_list.grid(row=4, column=2)
 
 # menubar
