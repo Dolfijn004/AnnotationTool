@@ -285,7 +285,9 @@ def draw_rect(self):
 
 
 def select_rect(event):
-    pass
+    x, y = image_area.canvasx(event.x), image_area.canvasy(event.y)
+    ids = max(image_area.find_overlapping(x, y, x, y))
+    print(ids)
 
 
 def create_polygon():
@@ -371,14 +373,12 @@ def clear_image():
     image_area.delete("all")
 
 
-def load_json(filepath):
-    f = open(filepath)
-    annos = json.load(f)
-    print(annos.keys)
-
 def enterLabels():
-    enteredlabel = labelEntry.get()
-    labellist.insert(0, enteredlabel)
+    if len(labelEntry.get()) == 0:
+        tkinter.messagebox.showwarning("Warning", "The input field is empty.")
+    else:
+        enteredlabel = labelEntry.get()
+        labelList.insert(0, enteredlabel)
 
 # hier wordt door mij aan gewerkt
 def click_tutorial():
@@ -640,8 +640,8 @@ image_area.pack(fill='both', expand=True)
 image_area.bind('<Motion>', motion)
 
 # listbox for labels
-labellist = Listbox(propertiesFrame, width=40, height=20)
-labellist.grid(row=2, column=2)
+labelList = Listbox(propertiesFrame, width=40, height=20)
+labelList.grid(row=2, column=2)
 # entry
 entryButton = Button(propertiesFrame, text="Add label", width=20, command=enterLabels)
 entryButton.grid(row=1, column=2)
