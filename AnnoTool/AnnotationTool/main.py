@@ -66,6 +66,8 @@ def get_image_file_path():
     global canvas
     global image_frame
     global image_area
+    global coords_label
+    coords_label['text'] = 'Select Shape for Coordinates'
     draw_annotations_button['state'] = tk.NORMAL
     create_polygon_button['state'] = tk.NORMAL
     clear_rect_button['state'] = tk.NORMAL
@@ -107,6 +109,8 @@ def open_folder():
     global img
     global image_area
     global all_images
+    global coords_label
+    coords_label['text'] = 'Select Shape for Coordinates'
     pre_image['state'] = tk.NORMAL
     next_image['state'] = tk.NORMAL
     draw_annotations_button['state'] = tk.NORMAL
@@ -160,6 +164,8 @@ def next_image():
     global img
     global image_area
     global all_images
+    global coords_label
+    coords_label['text'] = 'Select Shape for Coordinates'
     try:
         next_one = folder_list.curselection()
         next_one = next_one[0] + 1
@@ -200,6 +206,8 @@ def prev_image():
     global img
     global image_area
     global all_images
+    global coords_label
+    coords_label['text'] = 'Select Shape for Coordinates'
     try:
         prev_one = folder_list.curselection()
         prev_one = prev_one[0] - 1
@@ -401,6 +409,8 @@ def clear_rectangle():
     global rect_main_data
     global rect_list
     global rect_id
+    global coords_label
+    coords_label['text'] = 'Select Shape for Coordinates'
     image_area.delete(rect_list[-1])
     rect_list.pop()
     image_area.pack()
@@ -412,6 +422,8 @@ def clear_all_rectangles():
     global rect_main_data
     global rect_list
     global rect_id
+    global coords_label
+    coords_label['text'] = 'Select Shape for Coordinates'
 
     for i in rect_list:
         image_area.delete(i)
@@ -422,6 +434,8 @@ def clear_all_rectangles():
 
 # delete the image and it's annotations at once
 def clear_image():
+    global coords_label
+    coords_label['text'] = 'Select Shape for Coordinates'
     image_area.delete("all")
     pre_image['state'] = tk.DISABLED
     next_image['state'] = tk.DISABLED
